@@ -6,10 +6,11 @@
 == Überblick
 
 Alle Übungsbeispiele basieren auf der Annahme dass mit einer 'native' Docker Installation auf einer Ubuntu 14.04 LTS Box durchgeführt werden.
-Grundsätzlich ist das arbeiten unter Windows oder Mac OSX mittels boot2docker bzw. docker-machine möglich (auf eigene Verantwortung).
+
+Grundsätzlich ist das Arbeiten unter Windows oder Mac OSX mittels boot2docker bzw. docker-machine möglich (auf eigene Verantwortung).
 
 Es wird eine virtuelle Maschine `mse-akt` mit Ubuntu 14.04.x LTS zur Verfügung gestellt.
-Mit dieser können alle Übungen durchgeführt werden. Derzeit liegt diese nur als Server Installation vor.
+Mit dieser können alle Übungen durchgeführt werden. Derzeit liegt diese nur als Server Installation vor (kein grafisches UI verfügbar).
 
 Um mit einem externen SSH Client eine Verbindung zu dieser herzustellen, kann optional das OpenSSH Paket installiert werden.
 
@@ -92,7 +93,7 @@ Ziel dieser Übung ist es, einen Docker Container mit einer Ubuntu Shell zu star
 
 Beenden Sie den Container und erforschen Sie welche Docker Komponenten obiger Befehl erzeugt hat. Experimentieren Sie mit den Kommandos `docker images` und `docker ps`. Versuchen Sie auch die Erklärungen zu den verwendeten Kommandos mit der Option `--help` abzufragen.
 
-Versuchen Sie Querverbindungen zwischen den Informationen die von `docker images -a` sowie `docker history ubuntu` festzustellen.
+Versuchen Sie Querverbindungen zwischen den Informationen die von `docker images -a` sowie `docker history ubuntu` ausgegeben werden festzustellen.
 
 Versuchen Sie herauszufinden, in welcher Form ein Container nach Beendigung des Container Prozesses bestehen bleibt. Welchen Docker Befehl können Sie dafür verwenden?
 
@@ -103,7 +104,7 @@ Versuchen Sie herauszufinden, in welcher Form ein Container nach Beendigung des 
 
 Ziel dieser Übung ist es, mittels `docker -commit` Änderungen die in einem laufenden Container durchgeführt wurden permanent in einem neuen Image zu persistieren. Erstellen Sie dazu z.b. im Container einfach neue Verzeichnisse und Dateien.
 
-=== Image mit Oracle Java 8 erstellen
+=== Basis Container mit Oracle Java 8 erstellen
 
 Ziel dieser Übung ist es, mittels `docker build ...`, ein Docker Image mit Oracle Java 8 zu erstellen.
 
@@ -139,13 +140,22 @@ Abschliessend modifizieren Sie die Build Instruktionen sodass möglichst wenige 
 
 TIP: Dieses Image benötigen wir für eine spätere Übung.
 
-=== Image mit einer Java Web Applikation erstellen
+=== Container für Java Web Applikation erstellen
 
-Bei dieser Übung erstellen Sie mittels `docker build ...` ein Docker Image das eine Oracle Java 8 Installation benötigt.
-Zusätzlich fügen wir eine zur Verfügung gestellte Java Web Applikation hinzu.
+Bei dieser Übung erstellen Sie mittels `docker build ...` ein Docker Image mit einee Java Web Applikation die eine Oracle Java 8 Installation benötigt. Diese steht auf auf einem  https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1/rest/starbucks/target/spring-data-rest-starbucks-1.0.0.BUILD-SNAPSHOT.jar?archived=true[Snap-CI] Server zur Verfügung.
 
-TODO: Spring Boot executable JAR erstellen
+Die Web Anwendung benutzt zur Persistierung Ihrer Daten eine Mongo Datenbank die ebenfalls als eigenständiger Docker Container auszuführen ist. Die Datenbankverbindungsparameter können als Systemproperties an die Java Virtual Machine der Anwendung übergeben werden.
+
+[source,shell]
+.Startkommando der Web Applikation
+----
+java -jar -Dspring.data.mongodb.host=... -Dspring.data.mongodb.port=... spring-data-rest-starbucks.jar
+----
+
+In dem Applikations JAR File ist ein Tomcat Web Container verpackt der seine HTTP Dienste am Port 8080 zur Verfügung stellt. Für den Endanwender muß allerdings die Anwendung am Port 80 erreichbar sein!
 
 TIP: Dieses Image benötigen wir für eine spätere Übung.
 
-==
+=== Daten Container für einen Mongo Container erstellen
+
+...
