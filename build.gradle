@@ -8,8 +8,6 @@ plugins {
 group 'at.martinahrer'
 version '0.1'
 
-//githubToken='6056f8c5481d08f8cd3a0e29c87db1235f9977f2'
-
 githubPages {
     repoUri = 'git@github.com:MartinAhrer/fhs-mse-akt.git'
 
