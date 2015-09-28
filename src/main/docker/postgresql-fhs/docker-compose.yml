@@ -1,0 +1,9 @@
+postgresqldata:
+  image: fhs-hagenberg/postgresql-data
+
+postgresqlserver:
+  build: .
+  volumes_from:
+    - postgresqldata 
+  ports:
+    - "15432:5432"

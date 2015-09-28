@@ -1,0 +1,39 @@
+= README
+
+== Preparing The Images
+
+[source, shell]
+.Build Oracle Java 8 Image
+----
+cd oracle-java8
+docker build -t oracle-java8 .
+----
+
+[source, shell]
+.Download Mongo Docker Image
+----
+docker pull mongo:3.0
+----
+
+[source, shell]
+.Build Web Application
+----
+cd starbucks-web
+docker build  -t starbucks-web .
+----
+
+== Running The Containers
+
+`--rm` Flag is used as much as possible as to avoid leaving garbage. If keeping container state is important this flag must be removed.
+
+[source, shell]
+.Start Mongo
+----
+docker run --name mongo --rm mongo:3.0
+----
+
+[source, shell]
+.Start Web Application
+----
+docker run --name starbucks-web --rm  --link mongo:mongo -p 8080:8080 starbucks-web
+----

@@ -1,1 +1,1 @@
-# fhs-mse-akt
+# mse-akt

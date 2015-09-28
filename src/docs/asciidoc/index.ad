@@ -1,0 +1,151 @@
+:source-highlighter: pygments
+:ubuntu-version: 14.04 (trusty)
+
+= Übungsinstruktionen
+
+== Überblick
+
+Alle Übungsbeispiele basieren auf der Annahme dass mit einer 'native' Docker Installation auf einer Ubuntu 14.04 LTS Box durchgeführt werden.
+Grundsätzlich ist das arbeiten unter Windows oder Mac OSX mittels boot2docker bzw. docker-machine möglich (auf eigene Verantwortung).
+
+Es wird eine virtuelle Maschine `mse-akt` mit Ubuntu 14.04.x LTS zur Verfügung gestellt.
+Mit dieser können alle Übungen durchgeführt werden. Derzeit liegt diese nur als Server Installation vor.
+
+Um mit einem externen SSH Client eine Verbindung zu dieser herzustellen, kann optional das OpenSSH Paket installiert werden.
+
+[source, shell]
+----
+sudo apt-get install openssh-client
+sudo apt-get install openssh-server
+----
+
+Bei allen Übungsbeispielen mit Docker verwenden wir ausschließlich Ubuntu {ubuntu-version}. D.h. die Docker Container starten eine Ubuntu {ubuntu-version} Instanz!
+Damit ist eine zügige Übungsabwicklung möglich ohne dass permanent neuen Ubuntu Versionen über das Netzwerk geladen werden müssen.
+
+[source,shell]
+.Beispiel:
+----
+docker run -i -t --rm ubuntu:14.04 /bin/bash
+----
+
+IMPORTANT: Auf einem Linux Host müssen standardmäßig alle Docker Kommandos mit `sudo`(Super User Rechten) ausgeführt werden. Aus Gründen der Übersichtlichkeit und um die Beispiele kompakter zu halten, wird der `sudo` Prefix nachfolgend nicht dargestellt. `sudo` ist zudem auch nicht notwendig wenn z.B. auf Mac OSX mit boot2docker/docker-machine gearbeitet wird.
+
+Hilfe zu den Docker Kommandos finden Sie auf https://docs.docker.com/reference/commandline/cli/.
+
+== Virtuelle Maschine Erzeugen
+
+[source, shell]
+.docker-machine (Windows oder Mac OSX via boot2docker, cloud provider, ...):
+----
+docker-machine create --driver virtualbox mse-akt
+----
+
+TODO : Import Vmware Image
+
+
+== Virtuelle Maschine Starten
+
+.docker-machine (Windows oder Mac OSX via boot2docker, cloud provider, ...):
+[source, shell]
+----
+docker-machine start mse-akt
+eval "$(docker-machine env mse-akt)"
+----
+
+.Lokaler docker daemon (Vmware Image):
+Starte Vmware Image `mse-akt`.
+
+== Docker Installation
+
+Ziel dieser Übung ist es auf einer Ubuntu Instanz eine funktionsfähige Docker Installation einzurichten.
+
+[source, shell]
+----
+sudo apt-get update
+sudo apt-get install curl
+curl -sSL https://get.docker.com/ | sh
+----
+
+Detail Instruktionen: https://docs.docker.com/installation/ubuntulinux/[Docker auf Ubuntu installieren].
+
+Um die Docker Installation zu testen führen wir folgendes Kommando aus
+
+[source, shell]
+----
+docker run hello-world
+----
+
+=== Union File System
+
+Ziel dieser Übung ist es mehrere Verzeichnisse mittels AUFS zu überlagern, sodass die Inhalte derselben in einem mittels AUFS gemounteten Verzeichnis sichtbar werden.
+
+Wir installieren den File System Support für AUFS. Dieses wird nur für Übungszwecke benötigt, nicht durch Docker selbst.
+
+[source, shell]
+----
+sudo apt-get install aufs-tools
+----
+
+=== Docker kennenlernen
+
+Ziel dieser Übung ist es, einen Docker Container mit einer Ubuntu Shell zu starten. D.h. Sie müssen danach in der Lage sein innerhalb des Containers Shell Befehle abzusetzen. Verwenden Sie das Kommando `docker run`.
+
+Beenden Sie den Container und erforschen Sie welche Docker Komponenten obiger Befehl erzeugt hat. Experimentieren Sie mit den Kommandos `docker images` und `docker ps`. Versuchen Sie auch die Erklärungen zu den verwendeten Kommandos mit der Option `--help` abzufragen.
+
+Versuchen Sie Querverbindungen zwischen den Informationen die von `docker images -a` sowie `docker history ubuntu` festzustellen.
+
+Versuchen Sie herauszufinden, in welcher Form ein Container nach Beendigung des Container Prozesses bestehen bleibt. Welchen Docker Befehl können Sie dafür verwenden?
+
+
+== Docker Images
+
+=== Image durch Veränderung eines laufenden Containers erstellen
+
+Ziel dieser Übung ist es, mittels `docker -commit` Änderungen die in einem laufenden Container durchgeführt wurden permanent in einem neuen Image zu persistieren. Erstellen Sie dazu z.b. im Container einfach neue Verzeichnisse und Dateien.
+
+=== Image mit Oracle Java 8 erstellen
+
+Ziel dieser Übung ist es, mittels `docker build ...`, ein Docker Image mit Oracle Java 8 zu erstellen.
+
+[source, shell]
+.Ubuntu Oracle Java 8 Installations Script
+----
+apt-get update
+apt-get -y install python-software-properties software-properties-common
+echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true | debconf-set-selections
+add-apt-repository -y ppa:webupd8team/java
+apt-get update
+apt-get install -y oracle-java8-installer
+apt-get install oracle-java8-set-default
+rm -rf /var/lib/apt/lists/*
+rm -rf /var/cache/oracle-jdk8-installer
+----
+
+Testen Sie dieses Image und versuchen Sie damit einen Container zu starten und in diesem den Java Compiler und die Java VM zu starten. Sie können dazu unten vorgegebenen Quellcode verwenden.
+
+[source,java]
+.HelloWorld.java
+----
+class HelloWorld {
+  public static void main(String[] args) {
+    System.out.println ("Hello World");
+  }
+}
+----
+
+Führen Sie das Kommando zum Bauen des Image mehrfach aus, beobachten Sie die Konsolenausgabe. Was hat sich verändert? Weiters versuchen Sie herauszufinden, wieviele Layer erstellt wurden.
+
+Abschliessend modifizieren Sie die Build Instruktionen sodass möglichst wenige Layer produziert werden.
+
+TIP: Dieses Image benötigen wir für eine spätere Übung.
+
+=== Image mit einer Java Web Applikation erstellen
+
+Bei dieser Übung erstellen Sie mittels `docker build ...` ein Docker Image das eine Oracle Java 8 Installation benötigt.
+Zusätzlich fügen wir eine zur Verfügung gestellte Java Web Applikation hinzu.
+
+TODO: Spring Boot executable JAR erstellen
+
+TIP: Dieses Image benötigen wir für eine spätere Übung.
+
+==

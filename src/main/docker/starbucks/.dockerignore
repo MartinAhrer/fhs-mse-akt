@@ -1,0 +1,25 @@
+.git
+.gitignore
+
+*.hprof
+
+# Created at build time
+classes/
+build/
+out/
+.tomcat/
+
+# Created by Gradle
+.gradle/
+
+# Created by IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+*.ids
+
+#Created by the atlassian plugin
+atlassian-ide-plugin.xml
+
+*/src/main/generated/

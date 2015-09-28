@@ -1,0 +1,52 @@
+
+plugins {
+    id 'org.ajoberstar.github-pages' version '1.1.0'
+    id 'org.asciidoctor.gradle.asciidoctor' version '1.5.1'
+    id 'org.asciidoctor.convert' version '1.5.2'
+}
+
+group 'at.martinahrer'
+version '0.1'
+
+//githubToken='6056f8c5481d08f8cd3a0e29c87db1235f9977f2'
+
+githubPages {
+    repoUri = 'git@github.com:MartinAhrer/fhs-MSE15.3.AKT.git'
+
+    credentials {
+        username = project.hasProperty('githubToken') ? project.githubToken : ''
+        password = ''
+    }
+
+    pages {
+        from file(asciidoctor.outputDir.path + '/html5')
+    }
+}
+
+asciidoctor {
+    attributes 'build-gradle': file('build.gradle'),
+            'endpoint-url': 'http://example.org',
+            'source-highlighter': 'coderay',
+            'imagesdir': 'images',
+            'toc': 'left',
+            'icons': 'font',
+            'setanchors': 'true',
+            'idprefix': '',
+            'idseparator': '-',
+            'docinfo1': 'true'
+}
+
+publishGhPages.dependsOn asciidoctor
+
+
+//apply plugin: 'java'
+
+//sourceCompatibility = 1.5
+
+//repositories {
+//    mavenCentral()
+//}
+
+//dependencies {
+//    testCompile group: 'junit', name: 'junit', version: '4.11'
+//}
