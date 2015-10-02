@@ -142,7 +142,7 @@ TIP: Dieses Image benötigen wir für eine spätere Übung.
 
 === Container für Java Web Applikation erstellen
 
-Bei dieser Übung erstellen Sie mittels `docker build ...` ein Docker Image mit einee Java Web Applikation die eine Oracle Java 8 Installation benötigt. Diese steht auf auf einem  https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1/rest/starbucks/target/spring-data-rest-starbucks-1.0.0.BUILD-SNAPSHOT.jar?archived=true[Snap-CI] Server zur Verfügung.
+Bei dieser Übung erstellen Sie mittels `docker build ...` ein Docker Image das eine Java Web Applikation in einer Oracle Java 8 JVM ausführt. Die Applikation steht auf auf einem  https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1/rest/starbucks/target/spring-data-rest-starbucks-1.0.0.BUILD-SNAPSHOT.jar?archived=true[Snap-CI] Server zum Download zur Verfügung.
 
 Die Web Anwendung benutzt zur Persistierung Ihrer Daten eine Mongo Datenbank die ebenfalls als eigenständiger Docker Container auszuführen ist. Die Datenbankverbindungsparameter können als Systemproperties an die Java Virtual Machine der Anwendung übergeben werden.
 
@@ -152,9 +152,21 @@ Die Web Anwendung benutzt zur Persistierung Ihrer Daten eine Mongo Datenbank die
 java -jar -Dspring.data.mongodb.host=... -Dspring.data.mongodb.port=... spring-data-rest-starbucks.jar
 ----
 
-In dem Applikations JAR File ist ein Tomcat Web Container verpackt der seine HTTP Dienste am Port 8080 zur Verfügung stellt. Für den Endanwender muß allerdings die Anwendung am Port 80 erreichbar sein!
+In dem Applikations JAR File ist ein Tomcat Web Container verpackt der seine HTTP Dienste am Port 8080 zur Verfügung stellt.
 
 TIP: Dieses Image benötigen wir für eine spätere Übung.
+
+==== Zusatzaufgaben
+
+===== Port Konfiguration
+
+TODO : Explizite Portzuordnung, Automatische Portzuordnung für Mongo. 
+
+Wie bereits angeführt stellt Tomcat seine HTTP Dienste per Port 8080 zur Verfügung. Für den Endanwender soll nun die Anwendung am Port 80 erreichbar sein.
+
+===== Container Konfiguration
+
+Wir versuchen mit Hilfe des Kommandos `docker inspect` die Konfiguration des Containers abzufragen. Weiters versuchen wir das Kommando so zu ändern dass wir nur die Netzwerkkonfiguration bzw. nur die IP Adresse des Containers erhalten.
 
 === Daten Container für einen Mongo Container erstellen
 

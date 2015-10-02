@@ -32,8 +32,71 @@ docker build  -t starbucks-web .
 docker run --name mongo --rm mongo:3.0
 ----
 
+TIP: Notice that we didn't expose any of the Mongo ports.
+
+`docker inspect --format='{{ .NetworkSettings.IPAddress }}' mongo` reveals that the Mongo container has its own IP address. In addition `docker-machine env mse-akt` shows the IP address of the docker host which is different from the Mongo Container's IP address.
+
+.docker-machine env output on Mac OSX (based on boot2docker/VirtualBox)
+----
+export DOCKER_TLS_VERIFY="1"
+export DOCKER_HOST="tcp://192.168.99.100:2376"
+export DOCKER_CERT_PATH="/Users/martin/.docker/machine/machines/mse-akt"
+export DOCKER_MACHINE_NAME="mse-akt"
+----
+
+On a local (native) Docker installation we can get the docker host's IP address just using `ifconfig`.
+
 [source, shell]
 .Start Web Application
 ----
 docker run --name starbucks-web --rm  --link mongo:mongo -p 8080:8080 starbucks-web
+----
+
+We are relying on Docker's container linking capabilities for making the Mongo port accessible to the web application.
+
+.Start Web Application Container in interactive Mode
+----
+docker run --name starbucks-web --rm  --link mongo:mongo -p 8080:8080 --entrypoint=/bin/bash  -i -t starbucks-web
+----
+
+We have bypassed the built-in container entrypoint and execute a `bash` to show the environment variables set for the linked mongo container.
+
+.Output of `env` command
+----
+MONGO_ENV_MONGO_MAJOR=3.0
+HOSTNAME=3b4a7fe2dc94
+MONGO_PORT=tcp://172.17.0.1:27017
+MONGO_ENV_MONGO_VERSION=3.0.6
+MONGO_PORT_27017_TCP=tcp://172.17.0.1:27017
+PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+PWD=/
+JAVA_HOME=/usr/lib/jvm/java-8-oracle
+MONGO_PORT_27017_TCP_PROTO=tcp
+SHLVL=1
+HOME=/root
+MONGO_PORT_27017_TCP_ADDR=172.17.0.1
+APPLICATION_VERSION=1.0.0.BUILD-SNAPSHOT
+LESSOPEN=| /usr/bin/lesspipe %s
+CI_BUILD_URL=https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1
+MONGO_NAME=/starbucks-web/mongo
+MONGO_PORT_27017_TCP_PORT=27017
+LESSCLOSE=/usr/bin/lesspipe %s %s
+_=/usr/bin/env
+----
+
+.Content of `/etc/hosts
+----
+cat /etc/hosts
+172.17.0.4	3b4a7fe2dc94
+127.0.0.1	localhost
+::1	localhost ip6-localhost ip6-loopback
+fe00::0	ip6-localnet
+ff00::0	ip6-mcastprefix
+ff02::1	ip6-allnodes
+ff02::2	ip6-allrouters
+172.17.0.1	mongo 1580a3bada7c
+172.17.0.1	mongo
+172.17.0.1	mongo.bridge
+172.17.0.4	starbucks-web
+172.17.0.4	starbucks-web.bridge
 ----
