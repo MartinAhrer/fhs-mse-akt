@@ -1,0 +1,9 @@
+starbucks-web:
+  build: .
+  ports:
+    - 80:8080
+  links:
+    - mongo
+
+mongo:
+  image: mongo:3.0

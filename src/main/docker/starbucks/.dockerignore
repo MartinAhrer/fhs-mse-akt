@@ -23,3 +23,5 @@ out/
 atlassian-ide-plugin.xml
 
 */src/main/generated/
+
+docker-compose.yml

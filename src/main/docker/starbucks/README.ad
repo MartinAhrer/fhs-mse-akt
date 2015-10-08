@@ -1,5 +1,7 @@
 = README
 
+This document contains instructions for the solutions of lab exercises.
+
 == Preparing The Images
 
 [source, shell]
@@ -100,3 +102,9 @@ ff02::2	ip6-allrouters
 172.17.0.4	starbucks-web
 172.17.0.4	starbucks-web.bridge
 ----
+
+== Docker Compose
+
+`docker-compose up -d`
+`docker-compose ps`
+`docker-compose logs`

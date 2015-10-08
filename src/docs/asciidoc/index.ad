@@ -1,5 +1,6 @@
 :source-highlighter: pygments
 :ubuntu-version: 14.04 (trusty)
+:docker-compose-version: 1.4.2
 
 = Übungsinstruktionen
 
@@ -29,7 +30,7 @@ Damit ist eine zügige Übungsabwicklung möglich ohne dass permanent neuen Ubun
 docker run -i -t --rm ubuntu:14.04 /bin/bash
 ----
 
-IMPORTANT: Auf einem Linux Host müssen standardmäßig alle Docker Kommandos mit `sudo`(Super User Rechten) ausgeführt werden. Aus Gründen der Übersichtlichkeit und um die Beispiele kompakter zu halten, wird der `sudo` Prefix nachfolgend nicht dargestellt. `sudo` ist zudem auch nicht notwendig wenn z.B. auf Mac OSX mit boot2docker/docker-machine gearbeitet wird.
+IMPORTANT: Auf einem Linux Host müssen standardmäßig alle Docker Kommandos mit `sudo`(Super User Rechten) ausgeführt werden. Aus Gründen der Übersichtlichkeit und um die Beispiele kompakter zu halten, wird der `sudo` Prefix nachfolgend nicht dargestellt. `sudo` ist zudem auch nicht notwendig wenn z.B. auf Mac OSX mit boot2docker/docker-machine gearbeitet wird. Optional kann docker auch derart konfiguriert werden dass `sudo` nicht notwendig ist. Darauf wird aber aus Sicherheitsgründen im allgemeinen abgeraten.
 
 Hilfe zu den Docker Kommandos finden Sie auf https://docs.docker.com/reference/commandline/cli/.
 
@@ -98,15 +99,15 @@ Versuchen Sie Querverbindungen zwischen den Informationen die von `docker images
 Versuchen Sie herauszufinden, in welcher Form ein Container nach Beendigung des Container Prozesses bestehen bleibt. Welchen Docker Befehl können Sie dafür verwenden?
 
 
-== Docker Images
+== Images und Container
 
-=== Image durch Veränderung eines laufenden Containers erstellen
+=== Image aus einem Container erstellen
 
-Ziel dieser Übung ist es, mittels `docker -commit` Änderungen die in einem laufenden Container durchgeführt wurden permanent in einem neuen Image zu persistieren. Erstellen Sie dazu z.b. im Container einfach neue Verzeichnisse und Dateien.
+Ziel dieser Übung ist es, mittels `docker commit` Änderungen die in einem laufenden Container durchgeführt wurden permanent in einem neuen Image zu persistieren. Erstellen Sie dazu z.b. im Container einfach neue Verzeichnisse und Dateien.
 
-=== Basis Container mit Oracle Java 8 erstellen
+=== Oracle Java 8 Container
 
-Ziel dieser Übung ist es, mittels `docker build ...`, ein Docker Image mit Oracle Java 8 zu erstellen.
+Ziel dieser Übung ist es, mittels `docker build ...`, ein Docker Image mit Oracle Java 8 zu erstellen. Dieses Image wird die Grundlage bilden für weitere Container die eine JVM benötigen.
 
 [source, shell]
 .Ubuntu Oracle Java 8 Installations Script
@@ -138,19 +139,20 @@ Führen Sie das Kommando zum Bauen des Image mehrfach aus, beobachten Sie die Ko
 
 Abschliessend modifizieren Sie die Build Instruktionen sodass möglichst wenige Layer produziert werden.
 
-TIP: Dieses Image benötigen wir für eine spätere Übung.
+TIP: Dieses Image benötigen wir für spätere Übungen.
 
-=== Container für Java Web Applikation erstellen
+=== Java Web Applikation Container
 
-Bei dieser Übung erstellen Sie mittels `docker build ...` ein Docker Image das eine Java Web Applikation in einer Oracle Java 8 JVM ausführt. Die Applikation steht auf auf einem  https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1/rest/starbucks/target/spring-data-rest-starbucks-1.0.0.BUILD-SNAPSHOT.jar?archived=true[Snap-CI] Server zum Download zur Verfügung.
+Bei dieser Übung erstellen Sie mittels `docker build ...` ein Docker Image das eine Java Web Applikation in einer Oracle Java 8 JVM ausführt. Die Applikation steht auf einem  https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1/rest/starbucks/target/spring-data-rest-starbucks-1.0.0.BUILD-SNAPSHOT.jar?archived=true[Snap-CI] Server zum Download zur Verfügung.
 
-Die Web Anwendung benutzt zur Persistierung Ihrer Daten eine Mongo Datenbank die ebenfalls als eigenständiger Docker Container auszuführen ist. Die Datenbankverbindungsparameter können als Systemproperties an die Java Virtual Machine der Anwendung übergeben werden.
+Die Web Anwendung benutzt zur Persistierung Ihrer Daten eine Mongo Datenbank die ebenfalls als eigenständiger Docker Container auszuführen ist. Die Datenbankverbindungsparameter können als Systemproperties an die JVM der Anwendung übergeben werden.
 
 [source,shell]
 .Startkommando der Web Applikation
 ----
-java -jar -Dspring.data.mongodb.host=... -Dspring.data.mongodb.port=... spring-data-rest-starbucks.jar
+java -jar -Dspring.data.mongodb.host=... -Dspring.data.mongodb.port=... spring-data-rest-starbucks.jar <1>
 ----
+<1> Diese Startupparameter sind in der Spring Boot http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-mongodb[Referenz] beschrieben
 
 In dem Applikations JAR File ist ein Tomcat Web Container verpackt der seine HTTP Dienste am Port 8080 zur Verfügung stellt.
 
@@ -160,14 +162,45 @@ TIP: Dieses Image benötigen wir für eine spätere Übung.
 
 ===== Port Konfiguration
 
-TODO : Explizite Portzuordnung, Automatische Portzuordnung für Mongo. 
+Experimentieren Sie mit den passenden `docker` Kommandooptionen um einen Mongo Container zu starten der `EXPOSED` Ports
 
-Wie bereits angeführt stellt Tomcat seine HTTP Dienste per Port 8080 zur Verfügung. Für den Endanwender soll nun die Anwendung am Port 80 erreichbar sein.
+* explizit einem definierten Port zuordnet,
+* automatisch Ports zuordnet.
 
-===== Container Konfiguration
+Mit diesen Erkenntnissen rekonfigurieren wir den zuvor erstellten Web Applikation Container. Es wurde  bereits angeführt dass Tomcat seine HTTP Dienste per Port 8080 zur Verfügung stellt. Für den Endanwender soll nun die Anwendung am Port 80 erreichbar sein.
+
+===== Container Inspektion
 
 Wir versuchen mit Hilfe des Kommandos `docker inspect` die Konfiguration des Containers abzufragen. Weiters versuchen wir das Kommando so zu ändern dass wir nur die Netzwerkkonfiguration bzw. nur die IP Adresse des Containers erhalten.
 
 === Daten Container für einen Mongo Container erstellen
 
 ...
+
+== Multi Container Applikationen
+
+Die Erstellung sowie der Betrieb von Docker Containern für Anwendungen die aus vielen Subsystemen bestehen (Z.b. Web Server + Datenbankserver) ist aufwändig und komplex. Daher existiert mit *docker compose* ein Tool das erlaubt die Abhängigkeiten zwischen Containern so wie deren Ausführungskonfiguration zu beschreiben.
+
+=== Docker Compose Installation
+
+Eine allgemeine https://docs.docker.com/compose/install/[Installationsanleitung] zu *docker-compose* finden Sie im Web.
+
+[source,shell]
+----
+curl -L https://github.com/docker/compose/releases/download/VERSION_NUM/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose <1>
+----
+<1> Ersetzen Sie `VERSION_NUM` durch {docker-compose-version}. Entfernen Sie vor der Befehlsausführung den Hinweismarker (n).
+
+Für eine verbesserte Shell Unterstützung  können wir folgendes ausführen
+
+[source,shell]
+.bash auto-complete support
+----
+curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose --version | awk 'NR==1{print $NF}')/contrib/completion/bash/docker-compose > /etc/bash_completion.d/docker-compose
+----
+
+=== Docker Compose Datei
+
+Erstellen sie eine docker-compose Beschreibungsdatei die für die bereits erstellen Images und Container der Java Web Applikation die `build` Schritte sowie die Konfiguration zur Ausführung der Container festschreibt.
+
+Damit soll es möglich sein, den Mongo und den Web Container einfach per `docker-compose up` zu starten.
