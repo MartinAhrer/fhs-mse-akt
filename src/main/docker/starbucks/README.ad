@@ -1,11 +1,11 @@
 = README
 
-This document contains instructions for the solutions of lab exercises.
+This document contains solutions for the lab exercises.
 
 == Preparing The Images
 
 [source, shell]
-.Build Oracle Java 8 Image
+.Build Oracle JDK 8 Image
 ----
 cd oracle-java8
 docker build -t oracle-java8 .
@@ -106,5 +106,46 @@ ff02::2	ip6-allrouters
 == Docker Compose
 
 `docker-compose up -d`
+
 `docker-compose ps`
+
 `docker-compose logs`
+
+== Docker Machine
+
+=== Amazon Web Services EC2
+
+First create a virtual private cloud (VPC) with the AWS Management Console. Find the VPC ID of the VPC and export it as environment variable along with the AWS credentials.
+
+[source,bash]
+----
+export AWS_ACCESS_KEY_ID=<1>
+export AWS_SECRET_ACCESS_KEY=<2>
+export AWS_VPC_ID=<3>
+----
+<1> AWS Access Key ID aus der AWS Management Console
+<2> AWS Secret Access Key aus der AWS Management Console
+<3> AWS Virtual Private Cloud (VPC) ID
+
+[source,bash]
+.Create the docker machine
+----
+docker-machine -D create  \
+  --driver amazonec2 \
+  --amazonec2-access-key $AWS_ACCESS_KEY_ID --amazonec2-secret-key $AWS_SECRET_ACCESS_KEY \
+  --amazonec2-vpc-id $AWS_VPC_ID \
+  --amazonec2-zone b --amazonec2-region eu-central-1 \
+  aws-mse-akt
+eval "$(docker-machine env aws-mse-akt)"
+----
+
+Using the EC2 Dashboard configure an inbound rule in the security group `Docker+Machine` to allow port 80.
+
+[NOTE]
+--
+The security group has been created by docker-machine as a default.
+--
+
+Finally we build the Image for the Oracle JDK as described <<preparing-the-images,earlier>> and fire up the container `starbucks-web` using `docker-compose`.
+
+We get the IP address from executing `docker-machine ip aws-mse-akt`. Thus we can now open the URL `http://´docker-machine ip aws-mse-akt´:80`.
