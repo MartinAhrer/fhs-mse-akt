@@ -135,6 +135,8 @@ Versuchen Sie herauszufinden, in welcher Form ein Container nach Beendigung des 
 
 Ziel dieser Übung ist es, mittels `docker commit` Änderungen die in einem laufenden Container durchgeführt wurden permanent in einem neuen Image zu persistieren. Erstellen Sie dazu z.b. im Container einfach neue Verzeichnisse und Dateien.
 
+Versuchen Sie auch das Image Repository mit einem Tag auszustatten.
+
 === Oracle Java 8 Container
 
 Ziel dieser Übung ist es, mittels `docker build ...`, ein Docker Image mit Oracle Java 8 zu erstellen. Dieses Image wird die Grundlage bilden für weitere Container die eine JVM benötigen.
@@ -190,7 +192,7 @@ TIP: Dieses Image benötigen wir für eine spätere Übung.
 
 ==== Zusatzaufgaben
 
-===== Port Konfiguration
+.Port Konfiguration
 
 Experimentieren Sie mit den passenden `docker` Kommandooptionen um einen Mongo Container zu starten der `EXPOSED` Ports
 
@@ -199,9 +201,26 @@ Experimentieren Sie mit den passenden `docker` Kommandooptionen um einen Mongo C
 
 Mit diesen Erkenntnissen rekonfigurieren wir den zuvor erstellten Web Applikation Container. Es wurde  bereits angeführt dass Tomcat seine HTTP Dienste per Port 8080 zur Verfügung stellt. Für den Endanwender soll nun die Anwendung am Port 80 erreichbar sein.
 
-===== Container Inspektion
+.Container Inspektion
 
 Wir versuchen mit Hilfe des Kommandos `docker inspect` die Konfiguration des Containers abzufragen. Weiters versuchen wir das Kommando so zu ändern dass wir nur die Netzwerkkonfiguration bzw. nur die IP Adresse des Containers erhalten.
+
+=== Volumes
+
+.Mounten eines Data Volume
+
+Mittels `docker run ...` oder `docker create ...` ein Data Volume mounten. Danach mit `docker inspect ...` die physische Location des Volume überprüfen.
+
+.Mounten eines Host Verzeichnis als Data Volume
+
+Mittels `docker run ...` das Kommando `/bin/bash -c "touch /opt/database/touched.txt"` ausführen. Der Container soll ein Verzeichnis des Host mit dem Container Verzeichnis `/opt/database` mounten. Danach sollte im Host Verzeichnis die Datei `touched.txt`existieren.
+
+.Mounten der Volumes eines Data Container
+
+Mit der ersten Aufgabe haben wir bereits einen Data Container erstellt. Dieser hat ein Volume definiert. Mit dieser Aufgabe erstellen wir diesen Container ein weiteres Mal sowie einen neuen Container der die Volumes des ersten Container mountet.
+
+TIP: Dies ist das klassische Szenario das zum Einsatz bei Datenbankcontainern kommt. Wir haben einen Container der die Datenbanksoftware ausführt sowie einen Container der nur für die Datenhaltung verantwortlich ist.
+
 
 === Daten Container für einen Mongo Container erstellen
 
