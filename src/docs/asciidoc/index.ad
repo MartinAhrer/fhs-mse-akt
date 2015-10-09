@@ -4,14 +4,19 @@
 
 = Übungsinstruktionen
 
-== Überblick
+Alle Übungsbeispiele basieren auf der Annahme dass diese mit einer 'native' Docker Installation auf einer Linux Box durchgeführt werden. Vorzugsweise mittels des zur Verfügung gestellten Vmware Image `mse-akt`.
 
-Alle Übungsbeispiele basieren auf der Annahme dass mit einer 'native' Docker Installation auf einer Ubuntu 14.04 LTS Box durchgeführt werden.
+== Vmware Image mse-akt
 
-Grundsätzlich ist das Arbeiten unter Windows oder Mac OSX mittels boot2docker bzw. docker-machine möglich (auf eigene Verantwortung).
+Es wird eine virtuelle Maschine `mse-akt` mit Ubuntu 14.04.x LTS zur Verfügung gestellt. Mit dieser können alle Übungen durchgeführt werden. Derzeit liegt diese nur als Server Installation vor (kein grafisches UI verfügbar).
 
-Es wird eine virtuelle Maschine `mse-akt` mit Ubuntu 14.04.x LTS zur Verfügung gestellt.
-Mit dieser können alle Übungen durchgeführt werden. Derzeit liegt diese nur als Server Installation vor (kein grafisches UI verfügbar).
+=== Installation
+
+. Import des Vmware Image
+. Netzwerk konfigurieren (NAT oder Bridged???)
+. Starte Vmware Image `mse-akt`.
+
+=== SSH
 
 Um mit einem externen SSH Client eine Verbindung zu dieser herzustellen, kann optional das OpenSSH Paket installiert werden.
 
@@ -21,43 +26,7 @@ sudo apt-get install openssh-client
 sudo apt-get install openssh-server
 ----
 
-Bei allen Übungsbeispielen mit Docker verwenden wir ausschließlich Ubuntu {ubuntu-version}. D.h. die Docker Container starten eine Ubuntu {ubuntu-version} Instanz!
-Damit ist eine zügige Übungsabwicklung möglich ohne dass permanent neuen Ubuntu Versionen über das Netzwerk geladen werden müssen.
-
-[source,shell]
-.Beispiel:
-----
-docker run -i -t --rm ubuntu:14.04 /bin/bash
-----
-
-IMPORTANT: Auf einem Linux Host müssen standardmäßig alle Docker Kommandos mit `sudo`(Super User Rechten) ausgeführt werden. Aus Gründen der Übersichtlichkeit und um die Beispiele kompakter zu halten, wird der `sudo` Prefix nachfolgend nicht dargestellt. `sudo` ist zudem auch nicht notwendig wenn z.B. auf Mac OSX mit boot2docker/docker-machine gearbeitet wird. Optional kann docker auch derart konfiguriert werden dass `sudo` nicht notwendig ist. Darauf wird aber aus Sicherheitsgründen im allgemeinen abgeraten.
-
-Hilfe zu den Docker Kommandos finden Sie auf https://docs.docker.com/reference/commandline/cli/.
-
-== Virtuelle Maschine Erzeugen
-
-[source, shell]
-.docker-machine (Windows oder Mac OSX via boot2docker, cloud provider, ...):
-----
-docker-machine create --driver virtualbox mse-akt
-----
-
-TODO : Import Vmware Image
-
-
-== Virtuelle Maschine Starten
-
-.docker-machine (Windows oder Mac OSX via boot2docker, cloud provider, ...):
-[source, shell]
-----
-docker-machine start mse-akt
-eval "$(docker-machine env mse-akt)"
-----
-
-.Lokaler docker daemon (Vmware Image):
-Starte Vmware Image `mse-akt`.
-
-== Docker Installation
+=== Docker Installation
 
 Ziel dieser Übung ist es auf einer Ubuntu Instanz eine funktionsfähige Docker Installation einzurichten.
 
@@ -74,10 +43,62 @@ Um die Docker Installation zu testen führen wir folgendes Kommando aus
 
 [source, shell]
 ----
-docker run hello-world
+docker run -i -t --rm ubuntu:14.04 /bin/bash
 ----
 
-=== Union File System
+== docker-machine
+
+Wir können mit `docker-machine` direkt arbeiten wenn bereits ein Arbeitsgerät mit Unix zur Verfügung steht (z.B. Linux oder Mac OSX).
+Mit `docker-machine` ist es uns möglich auf diesem Gerät sehr einfach einen Docker Host einzurichten (das ist eine Linux Box mit einem vorkonfigurierten Docker Daemon).
+
+Docker ist auf diesen https://docs.docker.com/installation[Plattformen]  unterstützt. Vorzugsweise verwenden wir Mac OSX oder Ubuntu mit LTS (z.B. 14.04.LTS).
+
+CAUTION: Vor der Verwendung von `docker-machine` auf Windows wird abgeraten.
+
+=== docker-machine Installation
+
+Siehe https://docs.docker.com/machine/install-machine/.
+
+[source,shell]
+.docker-machine Installation für 64 bit Intel/AMD Linux
+----
+curl -L https://github.com/docker/machine/releases/download/v0.4.0/docker-machine_-`uname -s`-`uname -m` > /usr/local/bin/docker-machine
+chmod +x /usr/local/bin/docker-machine
+docker-machine -v
+----
+
+=== Docker Host Provisioning
+
+Folgende Instruktionen basieren auf der Annahme dass wir mit Virtual Box 4.x zur Virtualisierung des Docker Host arbeiten.
+
+[source, shell]
+.Docker Host erzeugen
+----
+docker-machine create --driver virtualbox mse-akt
+----
+
+.Docker Host starten
+[source, shell]
+----
+docker-machine start mse-akt
+eval "$(docker-machine env mse-akt)"
+----
+
+== Die Docker Installation überprüfen
+
+Bei allen Übungsbeispielen mit Docker verwenden wir ausschließlich Ubuntu {ubuntu-version}. D.h. die Docker Container starten eine Ubuntu {ubuntu-version} Instanz! Damit ist eine zügige Übungsabwicklung möglich ohne dass permanent neue Ubuntu Versionen über das Netzwerk geladen werden müssen.
+
+[source,shell]
+.Überprüfung der Docker Installation:
+----
+docker run -i -t --rm ubuntu:14.04 /bin/bash
+----
+
+IMPORTANT: Auf einem Linux Host müssen standardmäßig alle Docker Kommandos mit `sudo`(Super User Rechten) ausgeführt werden. Aus Gründen der Übersichtlichkeit und um die Beispiele kompakter zu halten, wird der `sudo` Prefix nachfolgend nicht dargestellt. `sudo` ist zudem auch nicht notwendig wenn z.B. auf Mac OSX mit boot2docker/docker-machine gearbeitet wird. Optional kann docker auch derart konfiguriert werden dass `sudo` nicht notwendig ist. Darauf wird aber aus Sicherheitsgründen im allgemeinen abgeraten.
+
+Hilfe zu den Docker Kommandos finden Sie auf https://docs.docker.com/reference/commandline/cli/.
+
+== Union File System
 
 Ziel dieser Übung ist es mehrere Verzeichnisse mittels AUFS zu überlagern, sodass die Inhalte derselben in einem mittels AUFS gemounteten Verzeichnis sichtbar werden.
 
@@ -88,7 +109,16 @@ Wir installieren den File System Support für AUFS. Dieses wird nur für Übungs
 sudo apt-get install aufs-tools
 ----
 
-=== Docker kennenlernen
+Erstellen Sie 3 Verzeichnisse
+
+* $HOME/aufs/sub1
+* $HOME/aufs/sub2
+* $HOME/aufs/root
+
+Erstellen Sie in allen Verzeichnissen ein Datei (Z.b. `touch file.txt` )
+Und verwenden Sie das installierte *aufs* Dateisystem mit dem `mnt` Kommando um die Verzeichnisse `sub1`und `sub2` als Unterverzeichnisse von `root` einzuhängen.
+
+== Docker kennenlernen
 
 Ziel dieser Übung ist es, einen Docker Container mit einer Ubuntu Shell zu starten. D.h. Sie müssen danach in der Lage sein innerhalb des Containers Shell Befehle abzusetzen. Verwenden Sie das Kommando `docker run`.
 
@@ -188,10 +218,11 @@ Eine allgemeine https://docs.docker.com/compose/install/[Installationsanleitung]
 [source,shell]
 ----
 curl -L https://github.com/docker/compose/releases/download/VERSION_NUM/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose <1>
+chmod +x /usr/local/bin/docker-compose
 ----
 <1> Ersetzen Sie `VERSION_NUM` durch {docker-compose-version}. Entfernen Sie vor der Befehlsausführung den Hinweismarker (n).
 
-Für eine verbesserte Shell Unterstützung  können wir folgendes ausführen
+Für eine verbesserte Shell Unterstützung können wir folgendes ausführen
 
 [source,shell]
 .bash auto-complete support
@@ -204,3 +235,7 @@ curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose --vers
 Erstellen sie eine docker-compose Beschreibungsdatei die für die bereits erstellen Images und Container der Java Web Applikation die `build` Schritte sowie die Konfiguration zur Ausführung der Container festschreibt.
 
 Damit soll es möglich sein, den Mongo und den Web Container einfach per `docker-compose up` zu starten.
+
+=== Docker Host Provisioning
+
+docker-machine
