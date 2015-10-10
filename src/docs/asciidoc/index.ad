@@ -205,7 +205,7 @@ Mit diesen Erkenntnissen rekonfigurieren wir den zuvor erstellten Web Applikatio
 
 Wir versuchen mit Hilfe des Kommandos `docker inspect` die Konfiguration des Containers abzufragen. Weiters versuchen wir das Kommando so zu ändern dass wir nur die Netzwerkkonfiguration bzw. nur die IP Adresse des Containers erhalten.
 
-=== Volumes
+== Volumes
 
 .Mounten eines Data Volume
 
@@ -221,10 +221,9 @@ Mit der ersten Aufgabe haben wir bereits einen Data Container erstellt. Dieser h
 
 TIP: Dies ist das klassische Szenario das zum Einsatz bei Datenbankcontainern kommt. Wir haben einen Container der die Datenbanksoftware ausführt sowie einen Container der nur für die Datenhaltung verantwortlich ist.
 
-
 === Daten Container für einen Mongo Container erstellen
 
-...
+CAUTION: TODO
 
 == Multi Container Applikationen
 
