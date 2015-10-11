@@ -6,19 +6,21 @@
 
 Alle Übungsbeispiele basieren auf der Annahme dass diese mit einer 'native' Docker Installation auf einer Linux Box durchgeführt werden. Vorzugsweise mittels des zur Verfügung gestellten Vmware Image `mse-akt`.
 
-== Vmware Image mse-akt
+== Setup
+
+=== Vmware Image mse-akt
 
 Es wird eine virtuelle Maschine `mse-akt` mit Ubuntu 14.04.x LTS zur Verfügung gestellt. Mit dieser können alle Übungen durchgeführt werden. Derzeit liegt diese nur als Server Installation vor (kein grafisches UI verfügbar).
 
-=== Installation
+.Image importieren
 
 . Import des Vmware Image
 . Netzwerk konfigurieren (NAT oder Bridged???)
 . Starte Vmware Image `mse-akt`.
 
-=== SSH
+.SSH Installation
 
-Um mit einem externen SSH Client eine Verbindung zu dieser herzustellen, kann optional das OpenSSH Paket installiert werden.
+Um mit einem externen SSH Client eine Verbindung zu dieser herzustellen, kann optional das OpenSSH Paket installiert werden. Dieser Schritt is optional.
 
 [source, shell]
 ----
@@ -26,9 +28,9 @@ sudo apt-get install openssh-client
 sudo apt-get install openssh-server
 ----
 
-=== Docker Installation
+.Docker Engine Installation
 
-Ziel dieser Übung ist es auf einer Ubuntu Instanz eine funktionsfähige Docker Installation einzurichten.
+Ziel dieser Übung ist es auf einer Ubuntu Instanz eine funktionsfähige Docker Engine einzurichten.
 
 [source, shell]
 ----
@@ -37,16 +39,9 @@ sudo apt-get install curl
 curl -sSL https://get.docker.com/ | sh
 ----
 
-Detail Instruktionen: https://docs.docker.com/installation/ubuntulinux/[Docker auf Ubuntu installieren].
+Die Detail Instruktionen können wir auf https://docs.docker.com/installation/ubuntulinux/ nachlesen.
 
-Um die Docker Installation zu testen führen wir folgendes Kommando aus
-
-[source, shell]
-----
-docker run -i -t --rm ubuntu:14.04 /bin/bash
-----
-
-== docker-machine
+=== docker-machine
 
 Wir können mit `docker-machine` direkt arbeiten wenn bereits ein Arbeitsgerät mit Unix zur Verfügung steht (z.B. Linux oder Mac OSX).
 Mit `docker-machine` ist es uns möglich auf diesem Gerät sehr einfach einen Docker Host einzurichten (das ist eine Linux Box mit einem vorkonfigurierten Docker Daemon).
@@ -55,7 +50,7 @@ Docker ist auf diesen https://docs.docker.com/installation[Plattformen]  unterst
 
 CAUTION: Vor der Verwendung von `docker-machine` auf Windows wird abgeraten.
 
-=== docker-machine Installation
+==== docker-machine Installation
 
 Siehe https://docs.docker.com/machine/install-machine/.
 
@@ -67,7 +62,7 @@ chmod +x /usr/local/bin/docker-machine
 docker-machine -v
 ----
 
-=== Docker Host Provisioning
+==== Docker Host Provisioning
 
 Folgende Instruktionen basieren auf der Annahme dass wir mit Virtual Box 4.x zur Virtualisierung des Docker Host arbeiten.
 
@@ -84,7 +79,7 @@ docker-machine start mse-akt
 eval "$(docker-machine env mse-akt)"
 ----
 
-== Die Docker Installation überprüfen
+=== Die Docker Installation überprüfen
 
 Bei allen Übungsbeispielen mit Docker verwenden wir ausschließlich Ubuntu {ubuntu-version}. D.h. die Docker Container starten eine Ubuntu {ubuntu-version} Instanz! Damit ist eine zügige Übungsabwicklung möglich ohne dass permanent neue Ubuntu Versionen über das Netzwerk geladen werden müssen.
 
