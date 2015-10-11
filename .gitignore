@@ -1,9 +1,11 @@
 
 # Created at build time
 build/
- 
+
 # Created by Gradle
 .gradle/
+!gradle/wrapper/gradle-wrapper.jar
+
 
 # Created by IDEA
 .idea/
@@ -11,6 +13,6 @@ build/
 *.iml
 *.ipr
 *.ids
- 
+
 #Created by the atlassian plugin
 atlassian-ide-plugin.xml
