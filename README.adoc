@@ -1,0 +1,3 @@
+= README
+
+image:https://snap-ci.com/MartinAhrer/fhs-mse-akt/branch/master/build_image["Build Status", link="https://snap-ci.com/MartinAhrer/fhs-mse-akt/branch/master"]
