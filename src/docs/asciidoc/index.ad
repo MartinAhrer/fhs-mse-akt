@@ -95,7 +95,7 @@ Hilfe zu den Docker Kommandos finden Sie auf https://docs.docker.com/reference/c
 
 == Union File System
 
-Ziel dieser Übung ist es mehrere Verzeichnisse mittels AUFS zu überlagern, sodass die Inhalte derselben in einem mittels AUFS gemounteten Verzeichnis sichtbar werden.
+Ziel dieser Übung ist es, mehrere Verzeichnisse mittels AUFS zu überlagern, sodass die Inhalte derselben in einem mittels AUFS gemounteten Verzeichnis sichtbar werden.
 
 Wir installieren den File System Support für AUFS. Dieses wird nur für Übungszwecke benötigt, nicht durch Docker selbst.
 
@@ -115,22 +115,30 @@ Und verwenden Sie das installierte *aufs* Dateisystem mit dem `mnt` Kommando um 
 
 == Docker kennenlernen
 
-Ziel dieser Übung ist es, einen Docker Container mit einer Ubuntu Shell zu starten. D.h. Sie müssen danach in der Lage sein innerhalb des Containers Shell Befehle abzusetzen. Verwenden Sie das Kommando `docker run`.
+Ziel dieser Übung ist es, einen Docker Container mit einer Ubuntu `bash` Shell zu starten und zu untersuchen welche Docker Komponenten erzeugt wurden und wie diese miteinander verknüpft sind.
 
-Beenden Sie den Container und erforschen Sie welche Docker Komponenten obiger Befehl erzeugt hat. Experimentieren Sie mit den Kommandos `docker images` und `docker ps`. Versuchen Sie auch die Erklärungen zu den verwendeten Kommandos mit der Option `--help` abzufragen.
+.Aufgabe 1:
+Die erste Aufgabe ist es, einen Container mit dem Kommando `docker run` (mit den richtigen Argumenten) zu starten sodass dieser Container interaktiv Befehle einer bash (`/bin/bash`) Shell entgegen nimmt.
+Beenden Sie danach den Container und erforschen Sie welche Docker Komponenten mit der ersten Aufgabe erzeugt wurden. Experimentieren Sie dazu mit den Kommandos `docker images` und `docker ps`. Versuchen Sie bei diesen Kommandos die Option `--help` um etwas mehr über diese docker Kommandos zu erfahren.
 
-Versuchen Sie Querverbindungen zwischen den Informationen die von `docker images -a` sowie `docker history ubuntu` ausgegeben werden festzustellen.
+.Aufgabe 2:
+Versuchen Sie Querverbindungen zwischen den Informationen, die von `docker images -a` sowie `docker history ubuntu` ausgegeben werden, festzustellen.
 
-Versuchen Sie herauszufinden, in welcher Form ein Container nach Beendigung des Container Prozesses bestehen bleibt. Welchen Docker Befehl können Sie dafür verwenden?
-
+.Aufgabe 3:
+Nach Terminierung eines Containers bleibt dieser im System verfügbar
+Versuchen Sie herauszufinden wie dieser entfernt werden kann. Wie müssen Sie das Kommando zum Erzeugen/Start des Containers modifizieren sodass der Container nach Terminierung aus dem System entfernt wird.
 
 == Images und Container
 
 === Image aus einem Container erstellen
 
-Ziel dieser Übung ist es, mittels `docker commit` Änderungen die in einem laufenden Container durchgeführt wurden permanent in einem neuen Image zu persistieren. Erstellen Sie dazu z.b. im Container einfach neue Verzeichnisse und Dateien.
+Ziel dieser Übung ist es, mittels `docker commit` Änderungen die in einem laufenden Container durchgeführt wurden permanent in einem neuen Image zu persistieren.
 
-Versuchen Sie auch das Image Repository mit einem Tag auszustatten.
+.Aufgabe 1:
+Starten Sie einen Container und verändern Sie das Filesystem. Danach erstellen Sie aus dem Container ein neues Image mit welchem Sie wiederum einen neuen Container starten. Sind die Änderungen im Filesystem noch sichtbar?
+
+.Aufgabe 2:
+Versuchen Sie auch das neu erstellte Image (Image Repository) mit einem Tag auszustatten. Das können Sie nachträglich oder direkt bei der Erzeugung des neuen Image durchführen.
 
 === Oracle Java 8 Container
 
@@ -150,7 +158,8 @@ rm -rf /var/lib/apt/lists/*
 rm -rf /var/cache/oracle-jdk8-installer
 ----
 
-Testen Sie dieses Image und versuchen Sie damit einen Container zu starten und in diesem den Java Compiler und die Java VM zu starten. Sie können dazu unten vorgegebenen Quellcode verwenden.
+.Aufgabe 1:
+Erstellen Sie das Image unter verwendung des gegebenen Provisioning Script. Testen Sie dieses Image und versuchen Sie damit einen Container zu starten und in diesem den Java Compiler und die Java VM zu starten. Sie können dazu unten vorgegebenen Quellcode verwenden.
 
 [source,java]
 .HelloWorld.java
@@ -162,43 +171,59 @@ class HelloWorld {
 }
 ----
 
+.Aufgabe 2:
 Führen Sie das Kommando zum Bauen des Image mehrfach aus, beobachten Sie die Konsolenausgabe. Was hat sich verändert? Weiters versuchen Sie herauszufinden, wieviele Layer erstellt wurden.
 
+.Aufgabe 3:
 Abschliessend modifizieren Sie die Build Instruktionen sodass möglichst wenige Layer produziert werden.
 
 TIP: Dieses Image benötigen wir für spätere Übungen.
 
-=== Java Web Applikation Container
+=== Java Web Application Container
 
-Bei dieser Übung erstellen Sie mittels `docker build ...` ein Docker Image das eine Java Web Applikation in einer Oracle Java 8 JVM ausführt. Die Applikation steht auf einem  https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1/rest/starbucks/target/spring-data-rest-starbucks-1.0.0.BUILD-SNAPSHOT.jar?archived=true[Snap-CI] Server zum Download zur Verfügung.
+Ziel dieser dieser Übung ist es, mittels `docker build`, einen Docker Container zu erstellen. Dieser Container soll eine Java Web Anwendung Starbucks Storefinder in einer Oracle Java 8 JVM ausführen.
 
-Die Web Anwendung benutzt zur Persistierung Ihrer Daten eine Mongo Datenbank die ebenfalls als eigenständiger Docker Container auszuführen ist. Die Datenbankverbindungsparameter können als Systemproperties an die JVM der Anwendung übergeben werden.
+TIP: Wir verwenden nun das in der vorigen Aufgabe erstellte Image mit Oracle Java 8.
 
-[source,shell]
-.Startkommando der Web Applikation
-----
-java -jar -Dspring.data.mongodb.host=... -Dspring.data.mongodb.port=... spring-data-rest-starbucks.jar <1>
-----
-<1> Diese Startupparameter sind in der Spring Boot http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-mongodb[Referenz] beschrieben
+.Aufgabe 1:
 
-In dem Applikations JAR File ist ein Tomcat Web Container verpackt der seine HTTP Dienste am Port 8080 zur Verfügung stellt.
+ . Image für die Web Anwendung erstellen
+ . Image für Mongo DB lokal laden (`docker pull`)
+ . Container für eine MongoDB starten
+ . Container für die Web Anwendung starten und mit dem Mongo Container verlinken
+ . Prüfen ob die Web Anwendung an der URL http://docker-host:8080 erreichbar ist.
 
-TIP: Dieses Image benötigen wir für eine spätere Übung.
+TIP: Das Web Anwendungs Image benötigen wir für eine spätere Übung.
 
-==== Zusatzaufgaben
-
-.Port Konfiguration
+.Aufgabe 2
 
 Experimentieren Sie mit den passenden `docker` Kommandooptionen um einen Mongo Container zu starten der `EXPOSED` Ports
 
 * explizit einem definierten Port zuordnet,
 * automatisch Ports zuordnet.
 
-Mit diesen Erkenntnissen rekonfigurieren wir den zuvor erstellten Web Applikation Container. Es wurde  bereits angeführt dass Tomcat seine HTTP Dienste per Port 8080 zur Verfügung stellt. Für den Endanwender soll nun die Anwendung am Port 80 erreichbar sein.
+Mit diesen Erkenntnissen rekonfigurieren wir den zuvor erstellten Web Anwendungs Container. Es wurde  bereits angeführt dass Tomcat seine HTTP Dienste per Port 8080 zur Verfügung stellt. Für den Endanwender soll nun die Anwendung am Port 80 erreichbar sein.
 
-.Container Inspektion
+.Aufgabe 3
 
 Wir versuchen mit Hilfe des Kommandos `docker inspect` die Konfiguration des Containers abzufragen. Weiters versuchen wir das Kommando so zu ändern dass wir nur die Netzwerkkonfiguration bzw. nur die IP Adresse des Containers erhalten.
+
+==== Starbucks Finder Web Anwendung
+
+Die Applikation wird mittels der URL   https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1/rest/starbucks/target/spring-data-rest-starbucks-1.0.0.BUILD-SNAPSHOT.jar?archived=true[Snap-CI] zum Download zur Verfügung gestellt.
+
+Die Web Anwendung benötigt zur Persistierung Ihrer Daten eine Mongo Datenbank. Die Datenbankverbindungsparameter können als Systemproperties an die JVM der Anwendung übergeben werden.
+
+[source,shell]
+.Startkommando der Web Anwendung
+----
+java -jar -Dspring.data.mongodb.host=... -Dspring.data.mongodb.port=... spring-data-rest-starbucks.jar <1>
+----
+<1> Diese Startupparameter sind in der Spring Boot http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-mongodb[Referenz] beschrieben
+
+TIP: Docker Hub stellt ein fertiges Mongo DB Image (`mongo:3.0`) zur Verfügung.
+
+In dem Anwendungs JAR File ist ein Tomcat Web Container verpackt der seine HTTP Dienste am Port 8080 zur Verfügung stellt.
 
 == Volumes
 
