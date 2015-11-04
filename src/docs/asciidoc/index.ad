@@ -10,57 +10,30 @@ Alle Übungsbeispiele basieren auf der Annahme dass diese mit einer 'native' Doc
 
 === Vmware Image mse-akt
 
-Es wird eine virtuelle Maschine `mse-akt` mit Ubuntu 14.04.x LTS zur Verfügung gestellt. Mit dieser können alle Übungen durchgeführt werden. Derzeit liegt diese nur als Server Installation vor (kein grafisches UI verfügbar).
+A virtual machine `mse-akt` based on Ubuntu 14.04.x LTS is provided. All lab exercises can be peformed using thise machine. As of now we only have a pure server setup available (sorry no desktop, no GUI).
 
 .Image importieren
 
 . Import des Vmware Image
-. Netzwerk konfigurieren (NAT oder Bridged???)
+. Netzwerk konfigurieren (Bridged)
 . Starte Vmware Image `mse-akt`.
 
-.SSH Installation
-
-Um mit einem externen SSH Client eine Verbindung zu dieser herzustellen, kann optional das OpenSSH Paket installiert werden. Dieser Schritt is optional.
+Using a SSH client we can try to connect to the Ubuntu machine.
 
 [source, shell]
-----
-sudo apt-get install openssh-client
-sudo apt-get install openssh-server
-----
-
-.Docker Engine Installation
-
-Ziel dieser Übung ist es auf einer Ubuntu Instanz eine funktionsfähige Docker Engine einzurichten.
-
-[source, shell]
-----
-sudo apt-get update
-sudo apt-get install curl
-curl -sSL https://get.docker.com/ | sh
-----
-
-Die Detail Instruktionen können wir auf https://docs.docker.com/installation/ubuntulinux/ nachlesen.
+--
+ssh mse-akt@mse.akt <1>
+--
+<1> This command will ask to enter the password for the user `mse-akt`.
 
 === docker-machine
 
 Wir können mit `docker-machine` direkt arbeiten wenn bereits ein Arbeitsgerät mit Unix zur Verfügung steht (z.B. Linux oder Mac OSX).
 Mit `docker-machine` ist es uns möglich auf diesem Gerät sehr einfach einen Docker Host einzurichten (das ist eine Linux Box mit einem vorkonfigurierten Docker Daemon).
 
-Docker ist auf diesen https://docs.docker.com/installation[Plattformen]  unterstützt. Vorzugsweise verwenden wir Mac OSX oder Ubuntu mit LTS (z.B. 14.04.LTS).
+Docker ist auf diesen https://docs.docker.com/installation[Plattformen]  unterstützt. Vorzugsweise verwenden wir Mac OSX oder Ubuntu (mit LTS z.B. 14.04.LTS).
 
 CAUTION: Vor der Verwendung von `docker-machine` auf Windows wird abgeraten.
-
-==== docker-machine Installation
-
-Siehe https://docs.docker.com/machine/install-machine/.
-
-[source,shell]
-.docker-machine Installation für 64 bit Intel/AMD Linux
-----
-curl -L https://github.com/docker/machine/releases/download/v0.4.0/docker-machine_-`uname -s`-`uname -m` > /usr/local/bin/docker-machine
-chmod +x /usr/local/bin/docker-machine
-docker-machine -v
-----
 
 ==== Docker Host Provisioning
 
@@ -159,7 +132,7 @@ rm -rf /var/cache/oracle-jdk8-installer
 ----
 
 .Aufgabe 1:
-Erstellen Sie das Image unter verwendung des gegebenen Provisioning Script. Testen Sie dieses Image und versuchen Sie damit einen Container zu starten und in diesem den Java Compiler und die Java VM zu starten. Sie können dazu unten vorgegebenen Quellcode verwenden.
+Erstellen Sie das Image unter Verwendung des gegebenen Provisioning Script. Testen Sie dieses Image und versuchen Sie damit einen Container zu starten und in diesem den Java Compiler und die Java VM zu starten. Sie können dazu unten vorgegebenen Quellcode verwenden.
 
 [source,java]
 .HelloWorld.java
@@ -181,19 +154,19 @@ TIP: Dieses Image benötigen wir für spätere Übungen.
 
 === Java Web Application Container
 
-Ziel dieser dieser Übung ist es, mittels `docker build`, einen Docker Container zu erstellen. Dieser Container soll eine Java Web Anwendung Starbucks Storefinder in einer Oracle Java 8 JVM ausführen.
+Ziel dieser dieser Übung ist es, mittels `docker build`, einen Docker Container zu erstellen. Dieser Container soll die Java Web Anwendung Starbucks Storefinder in einer Oracle Java 8 JVM ausführen.
 
 TIP: Wir verwenden nun das in der vorigen Aufgabe erstellte Image mit Oracle Java 8.
 
-.Aufgabe 1:
+.Aufgabe 1
 
  . Image für die Web Anwendung erstellen
  . Image für Mongo DB lokal laden (`docker pull`)
  . Container für eine MongoDB starten
  . Container für die Web Anwendung starten und mit dem Mongo Container verlinken
- . Prüfen ob die Web Anwendung an der URL http://docker-host:8080 erreichbar ist.
+ . Prüfen ob die Web Anwendung an der URL http://<docker-host>:8080 erreichbar ist.
 
-TIP: Das Web Anwendungs Image benötigen wir für eine spätere Übung.
+TIP: Docker Hub stellt ein fertiges Mongo DB Image (`mongo:3.0`) zur Verfügung.
 
 .Aufgabe 2
 
@@ -208,7 +181,7 @@ Mit diesen Erkenntnissen rekonfigurieren wir den zuvor erstellten Web Anwendungs
 
 Wir versuchen mit Hilfe des Kommandos `docker inspect` die Konfiguration des Containers abzufragen. Weiters versuchen wir das Kommando so zu ändern dass wir nur die Netzwerkkonfiguration bzw. nur die IP Adresse des Containers erhalten.
 
-==== Starbucks Finder Web Anwendung
+==== Starbucks Storefinder Web Anwendung
 
 Die Applikation wird mittels der URL   https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1/rest/starbucks/target/spring-data-rest-starbucks-1.0.0.BUILD-SNAPSHOT.jar?archived=true[Snap-CI] zum Download zur Verfügung gestellt.
 
@@ -221,21 +194,21 @@ java -jar -Dspring.data.mongodb.host=... -Dspring.data.mongodb.port=... spring-d
 ----
 <1> Diese Startupparameter sind in der Spring Boot http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-mongodb[Referenz] beschrieben
 
-TIP: Docker Hub stellt ein fertiges Mongo DB Image (`mongo:3.0`) zur Verfügung.
-
 In dem Anwendungs JAR File ist ein Tomcat Web Container verpackt der seine HTTP Dienste am Port 8080 zur Verfügung stellt.
+
+TIP: Das Web Anwendungs Image benötigen wir für eine spätere Übung.
 
 == Volumes
 
-.Mounten eines Data Volume
+.Aufgabe 1: Mounten eines Data Volume
 
 Mittels `docker run ...` oder `docker create ...` ein Data Volume mounten. Danach mit `docker inspect ...` die physische Location des Volume überprüfen.
 
-.Mounten eines Host Verzeichnis als Data Volume
+.Aufgabe 2: Mounten eines Host Verzeichnis als Data Volume
 
 Mittels `docker run ...` das Kommando `/bin/bash -c "touch /opt/database/touched.txt"` ausführen. Der Container soll ein Verzeichnis des Host mit dem Container Verzeichnis `/opt/database` mounten. Danach sollte im Host Verzeichnis die Datei `touched.txt`existieren.
 
-.Mounten der Volumes eines Data Container
+.Aufgabe 3: Mounten der Volumes eines Data Container
 
 Mit der ersten Aufgabe haben wir bereits einen Data Container erstellt. Dieser hat ein Volume definiert. Mit dieser Aufgabe erstellen wir diesen Container ein weiteres Mal sowie einen neuen Container der die Volumes des ersten Container mountet.
 
@@ -243,17 +216,74 @@ TIP: Dies ist das klassische Szenario das zum Einsatz bei Datenbankcontainern ko
 
 === Daten Container für einen Mongo Container erstellen
 
-CAUTION: TODO
+CAUTION: Work in progress
 
 == Multi Container Applikationen
 
 Die Erstellung sowie der Betrieb von Docker Containern für Anwendungen die aus vielen Subsystemen bestehen (Z.b. Web Server + Datenbankserver) ist aufwändig und komplex. Daher existiert mit *docker compose* ein Tool das erlaubt die Abhängigkeiten zwischen Containern so wie deren Ausführungskonfiguration zu beschreiben.
 
-=== Docker Compose Installation
+.Aufgabe 1
+
+Erstellen sie eine docker-compose Beschreibungsdatei die für die bereits erstellen Images und Container der Starbucks Finder Web Applikation die `build` Schritte sowie die Konfiguration zur Ausführung der Container beschreibt.
+
+Damit soll es möglich sein, den Mongo und den Web Container einfach durch Ausführung des Kommandos `docker-compose up` zu starten.
+
+== Docker Host Provisioning
+
+CAUTION: Work in progress
+
+docker-machine
+
+== Anhang
+
+=== Vmware Image mse-akt Provisioning
+
+==== Tools
+
+[source, shell]
+--
+sudo apt-get install unzip
+--
+
+==== OpenSSH
+
+We can install Open SSH in order to connect remotely using a SSH client such as `ssh` or `putty` (on Windows).
+
+.Install OpenSSH Server
+[source, shell]
+--
+sudo apt-get install openssh-server
+--
+
+.Install OpenSSH Client
+Is only required if an Open SSH client is required!
+[source, shell]
+--
+sudo apt-get install openssh-client
+--
+
+==== Docker Engine
+
+Mit den folgenden Anweisungen können Sie selbst einen Docker Host konfigurieren.
+
+.Install docker
+[source, shell]
+--
+sudo apt-get update
+sudo apt-get install curl
+curl -sSL https://get.docker.com/ | sh
+sudo usermod -aG docker mse-akt <1>
+--
+<1> Add the user mse-akt to the group docker which allows us to use the docker commands without sudo-ing.
+
+Die Detail Instruktionen können wir auf https://docs.docker.com/installation/ubuntulinux/ nachlesen.
+
+==== Docker Compose
 
 Eine allgemeine https://docs.docker.com/compose/install/[Installationsanleitung] zu *docker-compose* finden Sie im Web.
 
 [source,shell]
+.docker-compose Installation
 ----
 curl -L https://github.com/docker/compose/releases/download/VERSION_NUM/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose <1>
 chmod +x /usr/local/bin/docker-compose
@@ -268,12 +298,14 @@ Für eine verbesserte Shell Unterstützung können wir folgendes ausführen
 curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose --version | awk 'NR==1{print $NF}')/contrib/completion/bash/docker-compose > /etc/bash_completion.d/docker-compose
 ----
 
-=== Docker Compose Datei
+==== Docker Machine
 
-Erstellen sie eine docker-compose Beschreibungsdatei die für die bereits erstellen Images und Container der Java Web Applikation die `build` Schritte sowie die Konfiguration zur Ausführung der Container festschreibt.
+See https://docs.docker.com/machine/install-machine/.
 
-Damit soll es möglich sein, den Mongo und den Web Container einfach per `docker-compose up` zu starten.
-
-=== Docker Host Provisioning
-
-docker-machine
+[source,shell]
+.docker-machine 0.4.x Installation for 64 bit Intel/AMD Linux
+----
+curl -L https://github.com/docker/machine/releases/download/v0.4.1/docker-machine_linux-amd64 > /usr/local/bin/docker-machine
+chmod +x /usr/local/bin/docker-machine
+docker-machine -v
+--
