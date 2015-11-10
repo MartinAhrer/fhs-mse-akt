@@ -1,10 +1,10 @@
 :source-highlighter: pygments
 :ubuntu-version: 14.04 (trusty)
-:docker-compose-version: 1.4.2
+:docker-compose-version: 1.5.0
 
 = Übungsinstruktionen
 
-Alle Übungsbeispiele basieren auf der Annahme dass diese mit einer 'native' Docker Installation auf einer Linux Box durchgeführt werden. Vorzugsweise mittels des zur Verfügung gestellten Vmware Image `mse-akt`.
+All instructions for lab exercises are based on a 'native' Docker installation. This is provided through a Vmware Image `mse-akt`.
 
 == Setup
 
@@ -12,40 +12,43 @@ Alle Übungsbeispiele basieren auf der Annahme dass diese mit einer 'native' Doc
 
 A virtual machine `mse-akt` based on Ubuntu 14.04.x LTS is provided. All lab exercises can be peformed using thise machine. As of now we only have a pure server setup available (sorry no desktop, no GUI).
 
-.Image importieren
+.Setup the provided image
 
-. Import des Vmware Image
-. Netzwerk konfigurieren (Bridged)
-. Starte Vmware Image `mse-akt`.
+. Import Vmware image
+. Configure network (Bridged)
+. Start Vmware image `mse-akt`.
 
+.Connecting to the machine
 Using a SSH client we can try to connect to the Ubuntu machine.
 
 [source, shell]
 --
-ssh mse-akt@mse.akt <1>
+ssh mse-akt@mse-akt <1>
 --
 <1> This command will ask to enter the password for the user `mse-akt`.
 
+.Setup a student user account
+
+Follow the instructions included in the appendix!
+
 === docker-machine
 
-Wir können mit `docker-machine` direkt arbeiten wenn bereits ein Arbeitsgerät mit Unix zur Verfügung steht (z.B. Linux oder Mac OSX).
-Mit `docker-machine` ist es uns möglich auf diesem Gerät sehr einfach einen Docker Host einzurichten (das ist eine Linux Box mit einem vorkonfigurierten Docker Daemon).
+IMPORTANT: The docker-machine based setup is only documented for show-case purposes and not supported during lab sessions.
 
-Docker ist auf diesen https://docs.docker.com/installation[Plattformen]  unterstützt. Vorzugsweise verwenden wir Mac OSX oder Ubuntu (mit LTS z.B. 14.04.LTS).
+We can avoid working with an extra virtualization solution when a workstation based on native Linux (or Mac OSX) is available.
+Using `docker-machine` we can quickly provision a docker host (this is a Linux Box with a pre-configured Docker daemon).
 
-CAUTION: Vor der Verwendung von `docker-machine` auf Windows wird abgeraten.
+Docker supported for the following platforms: https://docs.docker.com/installation.
+Preferrably we use Mac OSX or Ubuntu (e.g. 14.04.LTS).
 
-==== Docker Host Provisioning
-
-Folgende Instruktionen basieren auf der Annahme dass wir mit Virtual Box 4.x zur Virtualisierung des Docker Host arbeiten.
-
+.Create a Docker host
 [source, shell]
-.Docker Host erzeugen
-----
-docker-machine create --driver virtualbox mse-akt
-----
+--
+docker-machine create --driver virtualbox mse-akt <1>
+--
+<1> This requires VirtualBox 4.x to be installed.
 
-.Docker Host starten
+.Start a Docker host
 [source, shell]
 ----
 docker-machine start mse-akt
@@ -62,7 +65,7 @@ Bei allen Übungsbeispielen mit Docker verwenden wir ausschließlich Ubuntu {ubu
 docker run -i -t --rm ubuntu:14.04 /bin/bash
 ----
 
-IMPORTANT: Auf einem Linux Host müssen standardmäßig alle Docker Kommandos mit `sudo`(Super User Rechten) ausgeführt werden. Aus Gründen der Übersichtlichkeit und um die Beispiele kompakter zu halten, wird der `sudo` Prefix nachfolgend nicht dargestellt. `sudo` ist zudem auch nicht notwendig wenn z.B. auf Mac OSX mit boot2docker/docker-machine gearbeitet wird. Optional kann docker auch derart konfiguriert werden dass `sudo` nicht notwendig ist. Darauf wird aber aus Sicherheitsgründen im allgemeinen abgeraten.
+IMPORTANT: Auf einem Linux Host müssen standardmäßig alle Docker Kommandos mit `sudo`(Super User Rechten) ausgeführt werden. Aus Gründen der Übersichtlichkeit und um die Beispiele kompakter zu halten, wird der `sudo` Prefix nachfolgend nicht dargestellt. `sudo` ist zudem auch nicht notwendig wenn z.B. auf Mac OSX mit boot2docker/docker-machine gearbeitet wird. Optional kann docker auch derart konfiguriert werden dass `sudo` nicht notwendig ist. Darauf wird aber aus Sicherheitsgründen im allgemeinen abgeraten. Um die Übungsabwicklung einfacher zu gestalten sind alle Benutzerkonten so konfiguriert dass auf `sudo` verzichtet werden kann.
 
 Hilfe zu den Docker Kommandos finden Sie auf https://docs.docker.com/reference/commandline/cli/.
 
@@ -230,13 +233,32 @@ Damit soll es möglich sein, den Mongo und den Web Container einfach durch Ausf�
 
 == Docker Host Provisioning
 
-CAUTION: Work in progress
+Currently students will not be able to perform docker-machine exercises within the Vmware image `mse-akt`. This limitation is due to the fact that it is hard to run a hypervisor within a hypervisor. In order to work with docker-machine we would have to setup VirtualBox witin the Vmware image. This VirtualBox would not be able to run as it will not be able to detect a proper `VT-X` flag which is required by a hypervisor.
 
-docker-machine
+Students could only be working with a non-local virtualization such as *Amazon AWS*, *DigitalOcean*, etc. However this would require each student to register with such a paid service (However Amazon AWS is free for the first year!).
+
+CAUTION: Work in progress
 
 == Anhang
 
 === Vmware Image mse-akt Provisioning
+
+The provided vmware image comes with a `sudo` enabled user named `mse-akt`. All host provisioning tasks requiring `su` privileges must be performed using this user.
+
+==== Student user
+
+Every student is required to add their own user account in order to avoid multiple students working from the same workstation to interfere with each other.
+
+[source,shell]
+--
+sudo adduser <your-student-id> <1>
+sudo adduser <your-student-id> docker <2>
+--
+
+<1> Add user account
+<2> Add user account to group `docker`
+
+IMPORTANT: Every student is obliged to create this student owned user account!
 
 ==== Tools
 
@@ -264,9 +286,9 @@ sudo apt-get install openssh-client
 
 ==== Docker Engine
 
-Mit den folgenden Anweisungen können Sie selbst einen Docker Host konfigurieren.
+Using the commands below we can provision a Docker host ourselves.
 
-.Install docker
+.Install Docker engine
 [source, shell]
 --
 sudo apt-get update
@@ -274,9 +296,9 @@ sudo apt-get install curl
 curl -sSL https://get.docker.com/ | sh
 sudo usermod -aG docker mse-akt <1>
 --
-<1> Add the user mse-akt to the group docker which allows us to use the docker commands without sudo-ing.
+<1> Add the user mse-akt to the group `docker` which allows us to use the docker commands without sudo-ing.
 
-Die Detail Instruktionen können wir auf https://docs.docker.com/installation/ubuntulinux/ nachlesen.
+Detailed instructions are available from https://docs.docker.com/installation/ubuntulinux/.
 
 ==== Docker Compose
 
@@ -285,8 +307,9 @@ Eine allgemeine https://docs.docker.com/compose/install/[Installationsanleitung]
 [source,shell]
 .docker-compose Installation
 ----
-curl -L https://github.com/docker/compose/releases/download/VERSION_NUM/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose <1>
-chmod +x /usr/local/bin/docker-compose
+curl -L https://github.com/docker/compose/releases/download/VERSION_NUM/docker-compose-`uname -s`-`uname -m` > docker-compose <1>
+chmod +x docker-compose
+sudo mv docker-compose /usr/local/bin/docker-compose
 ----
 <1> Ersetzen Sie `VERSION_NUM` durch {docker-compose-version}. Entfernen Sie vor der Befehlsausführung den Hinweismarker (n).
 
@@ -295,7 +318,8 @@ Für eine verbesserte Shell Unterstützung können wir folgendes ausführen
 [source,shell]
 .bash auto-complete support
 ----
-curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose --version | awk 'NR==1{print $NF}')/contrib/completion/bash/docker-compose > /etc/bash_completion.d/docker-compose
+curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose --version | awk 'NR==1{print $NF}')/contrib/completion/bash/docker-compose > docker-compose
+sudo mv docker-compose /etc/bash_completion.d/docker-compose
 ----
 
 ==== Docker Machine
@@ -303,9 +327,19 @@ curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose --vers
 See https://docs.docker.com/machine/install-machine/.
 
 [source,shell]
-.docker-machine 0.4.x Installation for 64 bit Intel/AMD Linux
-----
-curl -L https://github.com/docker/machine/releases/download/v0.4.1/docker-machine_linux-amd64 > /usr/local/bin/docker-machine
-chmod +x /usr/local/bin/docker-machine
+.docker-machine 0.4.x installation for 64 bit Intel/AMD Linux
+--
+curl -L https://github.com/docker/machine/releases/download/v0.5.0/docker-machine_linux-amd64 > docker-machine
+chmod +x docker-machine
+sudo mv docker-machine /usr/local/bin/docker-machine
 docker-machine -v
+--
+
+[source,shell]
+.docker-machine 0.5.0 installation for 64 bit Intel/AMD Linux
+--
+curl -L https://github.com/docker/machine/releases/download/v0.5.0/docker-machine_linux-amd64.zip >machine.zip && \
+  unzip machine.zip && \
+  rm machine.zip
+sudo mv -f docker-machine* /usr/local/bin
 --
