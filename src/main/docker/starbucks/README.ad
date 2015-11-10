@@ -6,23 +6,23 @@ This document contains solutions for the lab exercises.
 
 [source, shell]
 .Build Oracle JDK 8 Image
-----
+--
 cd oracle-java8
 docker build -t oracle-java8 .
-----
+--
 
 [source, shell]
 .Download Mongo Docker Image
-----
+--
 docker pull mongo:3.0
-----
+--
 
 [source, shell]
 .Build Web Application
-----
+--
 cd starbucks-web
 docker build  -t starbucks-web .
-----
+--
 
 == Running The Containers
 
@@ -30,41 +30,46 @@ docker build  -t starbucks-web .
 
 [source, shell]
 .Start Mongo
-----
+--
 docker run --name mongo --rm mongo:3.0
-----
+--
 
 TIP: Notice that we didn't expose any of the Mongo ports.
 
-`docker inspect --format='{{ .NetworkSettings.IPAddress }}' mongo` reveals that the Mongo container has its own IP address. In addition `docker-machine env mse-akt` shows the IP address of the docker host which is different from the Mongo Container's IP address.
+.Finding the IP address of a container/docker host
+
+`docker inspect --format='{{ .NetworkSettings.IPAddress }}' mongo` reveals that the Mongo container has its own IP address.
+
+In addition `docker-machine env mse-akt` shows the IP address of the docker host which is different from the Mongo Container's IP address.
 
 .docker-machine env output on Mac OSX (based on boot2docker/VirtualBox)
-----
+--
 export DOCKER_TLS_VERIFY="1"
 export DOCKER_HOST="tcp://192.168.99.100:2376"
 export DOCKER_CERT_PATH="/Users/martin/.docker/machine/machines/mse-akt"
 export DOCKER_MACHINE_NAME="mse-akt"
-----
+--
 
-On a local (native) Docker installation we can get the docker host's IP address just using `ifconfig`.
+For a locally running Docker engine we can get the docker host's IP address just using `ifconfig`.
 
 [source, shell]
 .Start Web Application
-----
+--
 docker run --name starbucks-web --rm  --link mongo:mongo -p 8080:8080 starbucks-web
-----
+--
 
 We are relying on Docker's container linking capabilities for making the Mongo port accessible to the web application.
 
 .Start Web Application Container in interactive Mode
-----
-docker run --name starbucks-web --rm  --link mongo:mongo -p 8080:8080 --entrypoint=/bin/bash  -i -t starbucks-web
-----
+[source, shell]
+--
+docker run --name starbucks-web --rm  --link mongo:mongo -p 8080:8080 --entrypoint=/bin/bash  -i -t starbucks-web <1>
+--
 
-We have bypassed the built-in container entrypoint and execute a `bash` to show the environment variables set for the linked mongo container.
+<1> We have bypassed the built-in container entrypoint and execute a `bash` to show the environment variables set for the linked mongo container.
 
 .Output of `env` command
-----
+--
 MONGO_ENV_MONGO_MAJOR=3.0
 HOSTNAME=3b4a7fe2dc94
 MONGO_PORT=tcp://172.17.0.1:27017
@@ -84,10 +89,10 @@ MONGO_NAME=/starbucks-web/mongo
 MONGO_PORT_27017_TCP_PORT=27017
 LESSCLOSE=/usr/bin/lesspipe %s %s
 _=/usr/bin/env
-----
+--
 
 .Content of `/etc/hosts
-----
+--
 cat /etc/hosts
 172.17.0.4	3b4a7fe2dc94
 127.0.0.1	localhost
@@ -101,7 +106,7 @@ ff02::2	ip6-allrouters
 172.17.0.1	mongo.bridge
 172.17.0.4	starbucks-web
 172.17.0.4	starbucks-web.bridge
-----
+--
 
 == Docker Compose
 
@@ -117,14 +122,15 @@ ff02::2	ip6-allrouters
 
 First create a virtual private cloud (VPC) with the AWS Management Console. Find the VPC ID of the VPC and export it as environment variable along with the AWS credentials.
 
+.Shell script for exporting AWS credentials
 [source,bash]
-----
+--
 export AWS_ACCESS_KEY_ID=<1>
 export AWS_SECRET_ACCESS_KEY=<2>
 export AWS_VPC_ID=<3>
-----
-<1> AWS Access Key ID aus der AWS Management Console
-<2> AWS Secret Access Key aus der AWS Management Console
+--
+<1> AWS Access Key ID from the AWS Management Console
+<2> AWS Secret Access Key from the AWS Management Console
 <3> AWS Virtual Private Cloud (VPC) ID
 
 [source,bash]
@@ -143,9 +149,14 @@ Using the EC2 Dashboard configure an inbound rule in the security group `Docker+
 
 [NOTE]
 --
-The security group has been created by docker-machine as a default.
+The security group `Docker+Machine` has been created by docker-machine as a default.
 --
 
 Finally we build the Image for the Oracle JDK as described <<preparing-the-images,earlier>> and fire up the container `starbucks-web` using `docker-compose`.
 
 We get the IP address from executing `docker-machine ip aws-mse-akt`. Thus we can now open the URL `http://´docker-machine ip aws-mse-akt´:80`.
+
+[NOTE]
+--
+Do not forget to stop the machine, otherwise every minute will be billed!
+--
