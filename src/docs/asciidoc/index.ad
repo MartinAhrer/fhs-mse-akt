@@ -1,6 +1,6 @@
 :source-highlighter: pygments
 :ubuntu-version: 14.04 (trusty)
-:docker-compose-version: 1.5.0
+:docker-compose-version: 1.5.2
 
 = Übungsinstruktionen
 
@@ -65,7 +65,7 @@ Bei allen Übungsbeispielen mit Docker verwenden wir ausschließlich Ubuntu {ubu
 docker run -i -t --rm ubuntu:14.04 /bin/bash
 ----
 
-IMPORTANT: Auf einem Linux Host müssen standardmäßig alle Docker Kommandos mit `sudo`(Super User Rechten) ausgeführt werden. Aus Gründen der Übersichtlichkeit und um die Beispiele kompakter zu halten, wird der `sudo` Prefix nachfolgend nicht dargestellt. `sudo` ist zudem auch nicht notwendig wenn z.B. auf Mac OSX mit boot2docker/docker-machine gearbeitet wird. Optional kann docker auch derart konfiguriert werden dass `sudo` nicht notwendig ist. Darauf wird aber aus Sicherheitsgründen im allgemeinen abgeraten. Um die Übungsabwicklung einfacher zu gestalten sind alle Benutzerkonten so konfiguriert dass auf `sudo` verzichtet werden kann.
+IMPORTANT: Auf einem Linux Host müssen standardmäßig alle Docker Kommandos mit `sudo` (Super User Rechten) ausgeführt werden. Aus Gründen der Übersichtlichkeit und um die Beispiele kompakter zu halten, wird der `sudo` Prefix nachfolgend nicht dargestellt. `sudo` ist zudem auch nicht notwendig wenn z.B. auf Mac OSX mit boot2docker/docker-machine gearbeitet wird. Optional kann docker auch derart konfiguriert werden dass `sudo` nicht notwendig ist. Darauf wird aber aus Sicherheitsgründen im allgemeinen abgeraten. Um die Übungsabwicklung einfacher zu gestalten sind alle Benutzerkonten so konfiguriert dass auf `sudo` verzichtet werden kann.
 
 Hilfe zu den Docker Kommandos finden Sie auf https://docs.docker.com/reference/commandline/cli/.
 
@@ -73,7 +73,7 @@ Hilfe zu den Docker Kommandos finden Sie auf https://docs.docker.com/reference/c
 
 Ziel dieser Übung ist es, mehrere Verzeichnisse mittels AUFS zu überlagern, sodass die Inhalte derselben in einem mittels AUFS gemounteten Verzeichnis sichtbar werden.
 
-Wir installieren den File System Support für AUFS. Dieses wird nur für Übungszwecke benötigt, nicht durch Docker selbst.
+Wir installieren den File System Support für AUFS. Dieses File System wird nur für Übungszwecke benötigt, nicht durch Docker selbst.
 
 [source, shell]
 ----
@@ -307,19 +307,22 @@ Eine allgemeine https://docs.docker.com/compose/install/[Installationsanleitung]
 [source,shell]
 .docker-compose Installation
 ----
-curl -L https://github.com/docker/compose/releases/download/VERSION_NUM/docker-compose-`uname -s`-`uname -m` > docker-compose <1>
-chmod +x docker-compose
-sudo mv docker-compose /usr/local/bin/docker-compose
+sudo -i <1>
+curl -L https://github.com/docker/compose/releases/download/VERSION_NUM/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose <2>
+chmod +x /usr/local/bin/docker-compose
+exit
 ----
-<1> Ersetzen Sie `VERSION_NUM` durch {docker-compose-version}. Entfernen Sie vor der Befehlsausführung den Hinweismarker (n).
+<1> Run the following commands as super user.
+<2> Ersetzen Sie `VERSION_NUM` durch {docker-compose-version}. Entfernen Sie vor der Befehlsausführung den Hinweismarker (n).
 
-Für eine verbesserte Shell Unterstützung können wir folgendes ausführen
+Für eine verbesserte Shell Unterstützung können wir folgendes ausführen:
 
 [source,shell]
 .bash auto-complete support
 ----
-curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose --version | awk 'NR==1{print $NF}')/contrib/completion/bash/docker-compose > docker-compose
-sudo mv docker-compose /etc/bash_completion.d/docker-compose
+sudo -i
+curl -L https://raw.githubusercontent.com/docker/compose/$(docker-compose --version | awk 'NR==1{print $NF}')/contrib/completion/bash/docker-compose > /etc/bash_completion.d/docker-compose
+exit
 ----
 
 ==== Docker Machine
