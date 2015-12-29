@@ -346,3 +346,12 @@ curl -L https://github.com/docker/machine/releases/download/v0.5.0/docker-machin
   rm machine.zip
 sudo mv -f docker-machine* /usr/local/bin
 --
+
+[source,shell]
+.docker-machine 0.5.3 installation for 64 bit Intel/AMD Linux
+--
+sudo -i
+curl -L https://github.com/docker/machine/releases/download/v0.5.3/docker-machine_linux-amd64 >/usr/local/bin/docker-machine
+chmod +x /usr/local/bin/docker-machine
+exit
+--
