@@ -2,7 +2,7 @@
 :ubuntu-version: 14.04 (trusty)
 :docker-compose-version: 1.5.2
 
-= Übungsinstruktionen
+= Lab Exercise Instructions
 
 All instructions for lab exercises are based on a 'native' Docker installation. This is provided through a Vmware Image `mse-akt`.
 
@@ -55,73 +55,82 @@ docker-machine start mse-akt
 eval "$(docker-machine env mse-akt)"
 ----
 
-=== Die Docker Installation überprüfen
+=== Check the Docker Installation
 
-Bei allen Übungsbeispielen mit Docker verwenden wir ausschließlich Ubuntu {ubuntu-version}. D.h. die Docker Container starten eine Ubuntu {ubuntu-version} Instanz! Damit ist eine zügige Übungsabwicklung möglich ohne dass permanent neue Ubuntu Versionen über das Netzwerk geladen werden müssen.
+With all lab exercies with Docker we are going to exclusively use Ubuntu {ubuntu-version}. I.e. all Docker containers start a Ubuntu {ubuntu-version}.
+Following this setup a speedy exercise execution is guaranteed and we avoid slow and unnecessary repeated network downloads.
 
 [source,shell]
-.Überprüfung der Docker Installation:
+.Check the Docker Installation:
 ----
 docker run -i -t --rm ubuntu:14.04 /bin/bash
 ----
 
-IMPORTANT: Auf einem Linux Host müssen standardmäßig alle Docker Kommandos mit `sudo` (Super User Rechten) ausgeführt werden. Aus Gründen der Übersichtlichkeit und um die Beispiele kompakter zu halten, wird der `sudo` Prefix nachfolgend nicht dargestellt. `sudo` ist zudem auch nicht notwendig wenn z.B. auf Mac OSX mit boot2docker/docker-machine gearbeitet wird. Optional kann docker auch derart konfiguriert werden dass `sudo` nicht notwendig ist. Darauf wird aber aus Sicherheitsgründen im allgemeinen abgeraten. Um die Übungsabwicklung einfacher zu gestalten sind alle Benutzerkonten so konfiguriert dass auf `sudo` verzichtet werden kann.
+IMPORTANT: With a Linux host and a default Docker installation all commands have to be executed using `sudo` (super user privileges). For reasons of clarity this `sudo` command prefix is not shown in the examples that will follow shortly. Further `sudo` is not necessary when working e.g. on Mac OSX with boot2docker (or docker machine). Optionally Docker may be installed in a way that does not require super user privileges. For security reasons this is not a recommended operation mode for Docker. However to make the lab exercises clearer the provided Docker environment is configured in such a way and `sudo` is not required for any of the docker commands.
 
-Hilfe zu den Docker Kommandos finden Sie auf https://docs.docker.com/reference/commandline/cli/.
+General help for the Docker commands is available from https://docs.docker.com/reference/commandline/cli/.
 
 == Union File System
 
-Ziel dieser Übung ist es, mehrere Verzeichnisse mittels AUFS zu überlagern, sodass die Inhalte derselben in einem mittels AUFS gemounteten Verzeichnis sichtbar werden.
+The goal of this exercise is to overlay multiple directories using AUFS such that the content of those directories is visible from a directory mounted from AUFS.
 
-Wir installieren den File System Support für AUFS. Dieses File System wird nur für Übungszwecke benötigt, nicht durch Docker selbst.
+First we are installing the file system support for AUFS. This file system is only required for the next lab exercise.
 
 [source, shell]
 ----
 sudo apt-get install aufs-tools
 ----
 
-Erstellen Sie 3 Verzeichnisse
+NOTE: `aufs-tools` may already be installed as a Docker dependency.
+
+Next we create 3 directories we will use shortly:
 
 * $HOME/aufs/sub1
 * $HOME/aufs/sub2
 * $HOME/aufs/root
 
-Erstellen Sie in allen Verzeichnissen ein Datei (Z.b. `touch file.txt` )
-Und verwenden Sie das installierte *aufs* Dateisystem mit dem `mnt` Kommando um die Verzeichnisse `sub1`und `sub2` als Unterverzeichnisse von `root` einzuhängen.
+Create a file in each of the created directories (E.g. `touch file.txt`). Finally use the installed *AUFS* file system to mount the directories `sub1` and `sub2` as subdirectories of `root`.
 
-== Docker kennenlernen
+NOTE: File systems are mounted using the system command 'mnt'.
 
-Ziel dieser Übung ist es, einen Docker Container mit einer Ubuntu `bash` Shell zu starten und zu untersuchen welche Docker Komponenten erzeugt wurden und wie diese miteinander verknüpft sind.
+== Meet Docker
 
-.Aufgabe 1:
-Die erste Aufgabe ist es, einen Container mit dem Kommando `docker run` (mit den richtigen Argumenten) zu starten sodass dieser Container interaktiv Befehle einer bash (`/bin/bash`) Shell entgegen nimmt.
-Beenden Sie danach den Container und erforschen Sie welche Docker Komponenten mit der ersten Aufgabe erzeugt wurden. Experimentieren Sie dazu mit den Kommandos `docker images` und `docker ps`. Versuchen Sie bei diesen Kommandos die Option `--help` um etwas mehr über diese docker Kommandos zu erfahren.
+Goal of this lab exercise is to start a Docker container running a `bash` shell and to examine what Docker components have been created and how these relate to each other.
 
-.Aufgabe 2:
-Versuchen Sie Querverbindungen zwischen den Informationen, die von `docker images -a` sowie `docker history ubuntu` ausgegeben werden, festzustellen.
+.Task 1:
+Your first task is creating a container using the command `docker run` (find the proper arguments using the built-in help). Once started this container must run a shell (`/bin/bash`) allowing you to execute bash commands interactively.
 
-.Aufgabe 3:
-Nach Terminierung eines Containers bleibt dieser im System verfügbar
-Versuchen Sie herauszufinden wie dieser entfernt werden kann. Wie müssen Sie das Kommando zum Erzeugen/Start des Containers modifizieren sodass der Container nach Terminierung aus dem System entfernt wird.
+Terminate the container and examine which components have been created along with the first task. Use the commands `docker images` and `docker ps` for performing your experiments. Also try the `--help` options of those commands to explore Docker further.
 
-== Images und Container
+.Task 2:
+Try to figure out crosslinks across the information items spit out by the commands `docker images -a` as well as `docker history ubuntu`
 
-=== Image aus einem Container erstellen
+.Task 3:
+After terminating a container it remains available in the system. Find a command to remove it manually. Then try to figure out how we can modify a container creation/execution command such that it is removed automatically after its termination.
 
-Ziel dieser Übung ist es, mittels `docker commit` Änderungen die in einem laufenden Container durchgeführt wurden permanent in einem neuen Image zu persistieren.
+.Task 4:
+The command `docker search` allows us to search for images using a search term. Try to explore the docker eco-system by issuing search requests for the terms `apache`, `LAMP`, `mongo`, `postgres`.
 
-.Aufgabe 1:
-Starten Sie einen Container und verändern Sie das Filesystem. Danach erstellen Sie aus dem Container ein neues Image mit welchem Sie wiederum einen neuen Container starten. Sind die Änderungen im Filesystem noch sichtbar?
+NOTE: By default the search command will search through the *docker hub*.
 
-.Aufgabe 2:
-Versuchen Sie auch das neu erstellte Image (Image Repository) mit einem Tag auszustatten. Das können Sie nachträglich oder direkt bei der Erzeugung des neuen Image durchführen.
+== Images and Containers
+
+=== Create an Image from a Container
+
+The goal of this lab exercise is to create a new image from an executing container using the `docker commit` command.
+
+.Task 1:
+Start a new container (e.g. run a bash shell interactively) and modify this container's file system. Then create a new image from this container. Finally use this image to start another container. Watch for the file system modifications that were applied within the first container. Are they still visible?
+
+.Task 2:
+Now apply a tag to the image that was created earlier. This can be done for the image that was already created or just when creating the image. Try both approaches.
 
 === Oracle Java 8 Container
 
-Ziel dieser Übung ist es, mittels `docker build ...`, ein Docker Image mit Oracle Java 8 zu erstellen. Dieses Image wird die Grundlage bilden für weitere Container die eine JVM benötigen.
+Goal of this lab exercise is to create a Docker image that contains an Oracle Java 8 installation. Use the command `docker build ...` (with proper arguments). We will be using this image as a base for later exercises that require a JVM.
 
 [source, shell]
-.Ubuntu Oracle Java 8 Installations Script
+.Ubuntu Oracle Java 8 Installation Script
 ----
 apt-get update
 apt-get -y install python-software-properties software-properties-common
@@ -134,8 +143,8 @@ rm -rf /var/lib/apt/lists/*
 rm -rf /var/cache/oracle-jdk8-installer
 ----
 
-.Aufgabe 1:
-Erstellen Sie das Image unter Verwendung des gegebenen Provisioning Script. Testen Sie dieses Image und versuchen Sie damit einen Container zu starten und in diesem den Java Compiler und die Java VM zu starten. Sie können dazu unten vorgegebenen Quellcode verwenden.
+.Task 1:
+Create the image using the provisioning script given before. Test that image by starting a container from this image. Once the container is running try compiling and running a simple Java class within this container.
 
 [source,java]
 .HelloWorld.java
@@ -147,103 +156,108 @@ class HelloWorld {
 }
 ----
 
-.Aufgabe 2:
-Führen Sie das Kommando zum Bauen des Image mehrfach aus, beobachten Sie die Konsolenausgabe. Was hat sich verändert? Weiters versuchen Sie herauszufinden, wieviele Layer erstellt wurden.
+.Task 2:
+Run the `docker build ...` command once more and watch the console output. What has changed? Try to figure out how many layers have been produced for the image.
 
-.Aufgabe 3:
-Abschliessend modifizieren Sie die Build Instruktionen sodass möglichst wenige Layer produziert werden.
+.Task 3:
+The last step of this exercise is to optimize the build instructions such that we have a minimum of layers.
 
-TIP: Dieses Image benötigen wir für spätere Übungen.
+TIP: We will use this image from this exercise for later exercises So make sure you finish it and it works properly.
 
 === Java Web Application Container
 
-Ziel dieser dieser Übung ist es, mittels `docker build`, einen Docker Container zu erstellen. Dieser Container soll die Java Web Anwendung Starbucks Storefinder in einer Oracle Java 8 JVM ausführen.
+Goal of this exercise is to create a Docker container using the `docker build ...` command. This container is configured to run a provided Java web application. This is the *Starbucks storefinder* application which requires a Oracle Java 8 JVM.
 
-TIP: Wir verwenden nun das in der vorigen Aufgabe erstellte Image mit Oracle Java 8.
+TIP: We are finally using the previously created Oracle Java 8 image.
 
-.Aufgabe 1
+.Task 1
 
- . Image für die Web Anwendung erstellen
- . Image für Mongo DB lokal laden (`docker pull`)
- . Container für eine MongoDB starten
- . Container für die Web Anwendung starten und mit dem Mongo Container verlinken
- . Prüfen ob die Web Anwendung an der URL http://<docker-host>:8080 erreichbar ist.
+ . Produce the image containing the web application
+ . Load the image for Mongo DB locally (`docker pull`)
+ . Start a container for the MongoDB
+ . Start the web application container and link it to the Mongo container
+ . Check if the web application is available at the URL http://<docker-host>:8080
 
-TIP: Docker Hub stellt ein fertiges Mongo DB Image (`mongo:3.0`) zur Verfügung.
+TIP: The Docker Hub provides a ready to run Mongo DB image (`mongo:3.0`).
 
-.Aufgabe 2
+.Task 2
+Play with the appropriate `docker` command options to start a Mongo container and to assign `EXPOSED` ports
 
-Experimentieren Sie mit den passenden `docker` Kommandooptionen um einen Mongo Container zu starten der `EXPOSED` Ports
+* explicitly to a given port
+* automatically.
 
-* explizit einem definierten Port zuordnet,
-* automatisch Ports zuordnet.
+Based on this new experiences we reconfigure the previously created web application container. By default Tomcat is offering its HTTP service through port 8080. We modify the build instructions for the image such that the Tomcat HTTP port is exposed and modify the container start command to assign port 80.
 
-Mit diesen Erkenntnissen rekonfigurieren wir den zuvor erstellten Web Anwendungs Container. Es wurde  bereits angeführt dass Tomcat seine HTTP Dienste per Port 8080 zur Verfügung stellt. Für den Endanwender soll nun die Anwendung am Port 80 erreichbar sein.
+.Task 3
 
-.Aufgabe 3
+Using the command `docker inspect` we try to query all of the configuration details of the web application container.
+Further we modify the command such that we can select specific configuration items by their name (e.g. we only receive the network configuration or just the IP adress).
 
-Wir versuchen mit Hilfe des Kommandos `docker inspect` die Konfiguration des Containers abzufragen. Weiters versuchen wir das Kommando so zu ändern dass wir nur die Netzwerkkonfiguration bzw. nur die IP Adresse des Containers erhalten.
+==== Starbucks Storefinder Web Application
 
-==== Starbucks Storefinder Web Anwendung
+This section briefly describes the web application we are working with.
 
-Die Applikation wird mittels der URL   https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1/rest/starbucks/target/spring-data-rest-starbucks-1.0.0.BUILD-SNAPSHOT.jar?archived=true[Snap-CI] zum Download zur Verfügung gestellt.
+The executable web application archive is available for download from the URL   https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1/rest/starbucks/target/spring-data-rest-starbucks-1.0.0.BUILD-SNAPSHOT.jar?archived=true[Snap-CI].
 
-Die Web Anwendung benötigt zur Persistierung Ihrer Daten eine Mongo Datenbank. Die Datenbankverbindungsparameter können als Systemproperties an die JVM der Anwendung übergeben werden.
+The archive is packaged as a Spring Boot application. It requires a Mongo DB for persisting its application data.
+Its database connection arguments can be passed as system properties to the JVM when starting.
 
 [source,shell]
-.Startkommando der Web Anwendung
+.Start command for the web application
 ----
 java -jar -Dspring.data.mongodb.host=... -Dspring.data.mongodb.port=... spring-data-rest-starbucks.jar <1>
 ----
-<1> Diese Startupparameter sind in der Spring Boot http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-mongodb[Referenz] beschrieben
+<1> These startup arguments are documented by the Spring Boot http://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#boot-features-mongodb[Reference].
 
-In dem Anwendungs JAR File ist ein Tomcat Web Container verpackt der seine HTTP Dienste am Port 8080 zur Verfügung stellt.
-
-TIP: Das Web Anwendungs Image benötigen wir für eine spätere Übung.
+The application archive contains an embedded Tomcat web container which exposes its HTTP services at port 8080.
 
 == Volumes
 
-.Aufgabe 1: Mounten eines Data Volume
+For the following tasks we just need a simple Ubuntu image which we use for executing a bash shell and play with data volumes.
 
-Mittels `docker run ...` oder `docker create ...` ein Data Volume mounten. Danach mit `docker inspect ...` die physische Location des Volume überprüfen.
+.Task 1: Mounting a data volume
 
-.Aufgabe 2: Mounten eines Host Verzeichnis als Data Volume
+Using `docker run ...` or `docker create ...` we mount a data volume. Following we check the location of the volume on the Docker host using `docker inspect ...`.
 
-Mittels `docker run ...` das Kommando `/bin/bash -c "touch /opt/database/touched.txt"` ausführen. Der Container soll ein Verzeichnis des Host mit dem Container Verzeichnis `/opt/database` mounten. Danach sollte im Host Verzeichnis die Datei `touched.txt`existieren.
+NOTE: The Docker host is the machine which is running the Docker daemon!
 
-.Aufgabe 3: Mounten der Volumes eines Data Container
+.Task 2: Mounting a host directory as data volume
 
-Mit der ersten Aufgabe haben wir bereits einen Data Container erstellt. Dieser hat ein Volume definiert. Mit dieser Aufgabe erstellen wir diesen Container ein weiteres Mal sowie einen neuen Container der die Volumes des ersten Container mountet.
+Using `docker run ...` we execute the command `/bin/bash -c "touch /opt/database/touched.txt"`. Find the proper arguments to the `run` command in order to mount a host directory to the container directory `/opt/database`. As the command exits we expect the file `touched.txt` in the mounted host directory.
 
-TIP: Dies ist das klassische Szenario das zum Einsatz bei Datenbankcontainern kommt. Wir haben einen Container der die Datenbanksoftware ausführt sowie einen Container der nur für die Datenhaltung verantwortlich ist.
+.Task 3: Mounting volumes from a data container
 
-=== Daten Container für einen Mongo Container erstellen
+Along task 1 we have already built a data container. This container includes a data volume. With this new task we recreate this container and then add another container that mounts all volumes from the first container.
+
+TIP: This is a typical scenario when working with containers that need a persistent storage (such as databases). We have a container that executes some data management software plus a container that is just responsible for maintaining persistent data (separation of concerns).
+
+=== Build a data container for a MongoDB container
 
 CAUTION: Work in progress
 
-== Multi Container Applikationen
+== Multi Container Applications
 
-Die Erstellung sowie der Betrieb von Docker Containern für Anwendungen die aus vielen Subsystemen bestehen (Z.b. Web Server + Datenbankserver) ist aufwändig und komplex. Daher existiert mit *docker compose* ein Tool das erlaubt die Abhängigkeiten zwischen Containern so wie deren Ausführungskonfiguration zu beschreiben.
+Building and running Docker containers for applications based on multiple subsystems ( e.g. web server + database server) is quite complex and time consuming. For this reason a tool named *docker compose* allows to describe dependencies between containers and their execution configuration.
 
-.Aufgabe 1
+.Task 1
 
-Erstellen sie eine docker-compose Beschreibungsdatei die für die bereits erstellen Images und Container der Starbucks Finder Web Applikation die `build` Schritte sowie die Konfiguration zur Ausführung der Container beschreibt.
+Create a docker compose container descriptor that builds the images and containers for the Starbucks Storefinder web application.
 
-Damit soll es möglich sein, den Mongo und den Web Container einfach durch Ausführung des Kommandos `docker-compose up` zu starten.
+As a result we will be able to run the MongoDB and the web application container just by issuing the command  `docker-compose up`.
 
 == Docker Host Provisioning
 
-Currently students will not be able to perform docker-machine exercises within the Vmware image `mse-akt`. This limitation is due to the fact that it is hard to run a hypervisor within a hypervisor. In order to work with docker-machine we would have to setup VirtualBox witin the Vmware image. This VirtualBox would not be able to run as it will not be able to detect a proper `VT-X` flag which is required by a hypervisor.
+Currently students will not be able to perform docker-machine exercises within the Vmware image `mse-akt`. This limitation is due to the fact that it is hard to run a hypervisor within a hypervisor. In order to work with docker-machine we would have to setup VirtualBox within the Vmware image. This VirtualBox would not be able to run as it will not be able to detect a proper `VT-X` flag which is required by a hypervisor.
 
 Students could only be working with a non-local virtualization such as *Amazon AWS*, *DigitalOcean*, etc. However this would require each student to register with such a paid service (However Amazon AWS is free for the first year!).
 
 CAUTION: Work in progress
 
-== Anhang
+== Appendix
 
 === Vmware Image mse-akt Provisioning
 
-The provided vmware image comes with a `sudo` enabled user named `mse-akt`. All host provisioning tasks requiring `su` privileges must be performed using this user.
+The provided Vmware image comes with a `sudo` enabled user named `mse-akt`. All host provisioning tasks requiring `su` privileges must be performed using this user.
 
 ==== Student user
 
@@ -302,10 +316,10 @@ Detailed instructions are available from https://docs.docker.com/installation/ub
 
 ==== Docker Compose
 
-Eine allgemeine https://docs.docker.com/compose/install/[Installationsanleitung] zu *docker-compose* finden Sie im Web.
+A common https://docs.docker.com/compose/install/[installation reference] for *docker-compose* is available from Docker Inc.
 
 [source,shell]
-.docker-compose Installation
+.docker-compose installation
 ----
 sudo -i <1>
 curl -L https://github.com/docker/compose/releases/download/VERSION_NUM/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose <2>
@@ -313,9 +327,9 @@ chmod +x /usr/local/bin/docker-compose
 exit
 ----
 <1> Run the following commands as super user.
-<2> Ersetzen Sie `VERSION_NUM` durch {docker-compose-version}. Entfernen Sie vor der Befehlsausführung den Hinweismarker (n).
+<2> Replace `VERSION_NUM` by {docker-compose-version}.
 
-Für eine verbesserte Shell Unterstützung können wir folgendes ausführen:
+For an improved shell experience we can install some shell support:
 
 [source,shell]
 .bash auto-complete support
