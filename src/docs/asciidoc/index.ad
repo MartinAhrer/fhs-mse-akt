@@ -8,9 +8,25 @@ All instructions for lab exercises are based on a 'native' Docker installation. 
 
 == Setup
 
-=== Vmware Image mse-akt
+=== Create Vmware Image mse-akt
 
-A virtual machine `mse-akt` based on Ubuntu 14.04.x LTS is provided. All lab exercises can be peformed using thise machine. As of now we only have a pure server setup available (sorry no desktop, no GUI).
+NOTE: This is not intended to be performed by students as the image will be provided.
+
+* Create Vmware guest (e.g. using Vmware Player) with networking bridged (this will allow to connect to the guest machine from the network using a SSH client)
+* Install Ubuntu Long Term Support (LTS) {ubuntu-version}
+* Configure locale `english (en_US.UTF-8)``
+* Configure location `Austria`
+* Configure hostname `mse-akt`
+* Configure username `mse-akt`
+* Configure password `mse-akt!``
+* Configure timezone `Europe/Vienna`
+* Configure partition with "Guided, use entire disk"
+* Configure to install package OpenSSH
+* Configure to install GRUB to MBR
+
+=== Import Vmware Image mse-akt
+
+A virtual machine `mse-akt` based on Ubuntu LTS {ubuntu-version} is provided. All lab exercises can be performed using this machine. As of now we only have a pure server setup available (sorry no desktop, no GUI).
 
 .Setup the provided image
 
@@ -26,6 +42,8 @@ Using a SSH client we can try to connect to the Ubuntu machine.
 ssh mse-akt@mse-akt <1>
 --
 <1> This command will ask to enter the password for the user `mse-akt`.
+
+NOTE: On a Windows machine you may want to use http://www.putty.org/[putty] as SSH client or even use https://www.cygwin.com/[cygwin] to have a kind of unix like experience.
 
 .Setup a student user account
 
