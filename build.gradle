@@ -1,12 +1,27 @@
 
+buildscript {
+	dependencies {
+		classpath 'org.asciidoctor:asciidoctorj-pdf:1.5.0-alpha.8'
+	}
+}
+
 plugins {
     id 'org.ajoberstar.github-pages' version '1.1.0'
     id 'org.asciidoctor.gradle.asciidoctor' version '1.5.1'
     id 'org.asciidoctor.convert' version '1.5.2'
+    id 'com.github.jruby-gradle.base' version '0.1.5'
 }
+
+import org.asciidoctor.gradle.AsciidoctorTask
 
 group 'at.martinahrer'
 version '0.1'
+
+
+dependencies {
+    gems 'rubygems:slim:2.1.0'
+    gems 'rubygems:thread_safe:0.3.4'
+}
 
 githubPages {
     repoUri = 'git@github.com:MartinAhrer/fhs-mse-akt.git'
@@ -33,5 +48,25 @@ asciidoctor {
             'idseparator': '-',
             'docinfo1': 'true'
 }
-
 publishGhPages.dependsOn asciidoctor
+//build.dependsOn asciidoctor TODO: > Could not find property 'build' on root project 'mse-akt'. on cd server
+
+task asciidoctorPdf (type: AsciidoctorTask, dependsOn: jrubyPrepareGems) {
+		sources {
+			include 'index.ad'
+		}
+
+		backends 'pdf'
+
+		attributes	'build-gradle': file('build.gradle'),
+					'endpoint-url': 'http://example.org',
+					'source-highlighter' : 'coderay',
+					'imagesdir':'./images',
+					'toc':'left',
+					'icons': 'font',
+					'setanchors':'true',
+					'idprefix':'',
+					'idseparator':'-',
+					'docinfo1':'true'
+}
+//build.dependsOn("asciidoctorPdf") TODO: -> see above
