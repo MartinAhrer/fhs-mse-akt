@@ -14,11 +14,11 @@ NOTE: This is not intended to be performed by students as the image will be prov
 
 * Create Vmware guest (e.g. using Vmware Player) with networking bridged (this will allow to connect to the guest machine from the network using a SSH client)
 * Install Ubuntu Long Term Support (LTS) {ubuntu-version}
-* Configure locale `english (en_US.UTF-8)``
+* Configure locale `english (en_US.UTF-8)`
 * Configure location `Austria`
 * Configure hostname `mse-akt`
 * Configure username `mse-akt`
-* Configure password `mse-akt!``
+* Configure password `mse-akt!`
 * Configure timezone `Europe/Vienna`
 * Configure partition with "Guided, use entire disk"
 * Configure to install package OpenSSH
