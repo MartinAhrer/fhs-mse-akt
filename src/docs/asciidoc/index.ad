@@ -2,6 +2,8 @@
 :ubuntu-version: 14.04 (trusty)
 :docker-compose-version: 1.5.2
 
+:pagenums:
+
 = Lab Exercise Instructions
 
 All instructions for lab exercises are based on a 'native' Docker installation. This is provided through a Vmware Image `mse-akt`.
