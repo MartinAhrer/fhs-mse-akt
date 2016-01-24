@@ -43,6 +43,8 @@ TIP: Notice that we didn't expose any of the Mongo ports.
 In addition `docker-machine env mse-akt` shows the IP address of the docker host which is different from the Mongo Container's IP address.
 
 .docker-machine env output on Mac OSX (based on boot2docker/VirtualBox)
+
+[source, shell]
 --
 export DOCKER_TLS_VERIFY="1"
 export DOCKER_HOST="tcp://192.168.99.100:2376"
@@ -69,6 +71,7 @@ docker run --name starbucks-web --rm  --link mongo:mongo -p 8080:8080 --entrypoi
 <1> We have bypassed the built-in container entrypoint and execute a `bash` to show the environment variables set for the linked mongo container.
 
 .Output of `env` command
+[source, shell]
 --
 MONGO_ENV_MONGO_MAJOR=3.0
 HOSTNAME=3b4a7fe2dc94
@@ -92,6 +95,7 @@ _=/usr/bin/env
 --
 
 .Content of `/etc/hosts
+[source, shell]
 --
 cat /etc/hosts
 172.17.0.4	3b4a7fe2dc94

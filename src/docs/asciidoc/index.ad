@@ -77,7 +77,7 @@ eval "$(docker-machine env mse-akt)"
 
 === Check the Docker Installation
 
-With all lab exercies with Docker we are going to exclusively use Ubuntu {ubuntu-version}. I.e. all Docker containers start a Ubuntu {ubuntu-version}.
+With all lab exercises with Docker we are going to exclusively use Ubuntu {ubuntu-version}. I.e. all Docker containers start a Ubuntu {ubuntu-version}.
 Following this setup a speedy exercise execution is guaranteed and we avoid slow and unnecessary repeated network downloads.
 
 [source,shell]
@@ -218,6 +218,8 @@ Further we modify the command such that we can select specific configuration ite
 This section briefly describes the web application we are working with.
 
 The executable web application archive is available for download from the URL   https://snap-ci.com/buildartifacts/blue/40055/defaultPipeline/4/Commit/1/rest/starbucks/target/spring-data-rest-starbucks-1.0.0.BUILD-SNAPSHOT.jar?archived=true[Snap-CI].
+
+CAUTION: Snap-CI is using so called "green" / "blue" deployments. So occasionally the URL switches its value for retrieving the artifacts. Watch out for the term `blue` in the URL and eventually replace it by `green`.
 
 The archive is packaged as a Spring Boot application. It requires a Mongo DB for persisting its application data.
 Its database connection arguments can be passed as system properties to the JVM when starting.
